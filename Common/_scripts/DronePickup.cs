@@ -12,7 +12,6 @@ using VRC.Udon.Common.Interfaces;
 public class DronePickup : UdonSharpBehaviour
 {
     public Transform _holdOffset;
-    public LayerMask triggerDropZone;
     
     [UdonSynced]
     [FieldChangeCallback(nameof(Held))]
