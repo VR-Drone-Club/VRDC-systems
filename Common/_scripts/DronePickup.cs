@@ -12,6 +12,7 @@ using VRC.Udon.Common.Interfaces;
 public class DronePickup : UdonSharpBehaviour
 {
     public Transform _holdOffset;
+    public bool dropOnCollision;
     
     [UdonSynced]
     [FieldChangeCallback(nameof(Held))]
@@ -161,6 +162,7 @@ public class DronePickup : UdonSharpBehaviour
             .AddParameter("SyncedHeld", _syncedHeld)
             .AddParameter("other", other.gameObject);
         */
+        if (!dropOnCollision) return;
         if (!Networking.IsOwner(gameObject)) return;
         if (_localHeld) Detach();
     }
