@@ -27,10 +27,11 @@ public class DronePickup : UdonSharpBehaviour
         }
         set
         {
+            /*
             EventTracker.Instance().TrackEvent(nameof(DronePickup), nameof(Held) + "Changed", gameObject)
                 .AddParameter("Old", _syncedHeld)
                 .AddParameter("New", value);
-            
+            */
             _cooldownTime = Time.realtimeSinceStartup;
             _syncedHeld = value;
             RequestSerialization();
