@@ -16,6 +16,6 @@ public class DropTrigger : UdonSharpBehaviour
     {
         if (!Utilities.IsValid(other)) return;
         DronePickup grab = other.gameObject.GetComponent<DronePickup>();
-        grab.Detach();
+        if (Utilities.IsValid(grab)) grab.Detach();
     }
 }
