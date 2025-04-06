@@ -24,20 +24,24 @@
       sampler2D _ColorMask;
       sampler2D _EmissionMask;
       sampler2D _NormalMap;
-      float4 _Color0;
-      float4 _Color1;
-      float4 _Color2;
-      float4 _EmissionColor;
+
+      UNITY_INSTANCING_BUFFER_START(Props)
+      UNITY_DEFINE_INSTANCED_PROP(float4, _Color0)
+      UNITY_DEFINE_INSTANCED_PROP(float4, _Color1)
+      UNITY_DEFINE_INSTANCED_PROP(float4, _Color2)
+      UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
+      UNITY_INSTANCING_BUFFER_END(Props)
+
       
       void surf (Input IN, inout SurfaceOutput o)
       {
           
           o.Albedo = tex2D(_MainTex, IN.uv_MainTex);
           float4 sampleAmount = tex2D(_ColorMask, IN.uv_MainTex);
-          o.Albedo = lerp(o.Albedo, _Color0 * o.Albedo, sampleAmount.r);
-          o.Albedo = lerp(o.Albedo, _Color1 * o.Albedo, sampleAmount.g);
-          o.Albedo = lerp(o.Albedo, _Color2 * o.Albedo, sampleAmount.b);
-          o.Emission = tex2D(_EmissionMask, IN.uv_MainTex) * _EmissionColor;
+          o.Albedo = lerp(o.Albedo, UNITY_ACCESS_INSTANCED_PROP(Props, _Color0) * o.Albedo, sampleAmount.r);
+          o.Albedo = lerp(o.Albedo, UNITY_ACCESS_INSTANCED_PROP(Props, _Color1) * o.Albedo, sampleAmount.g);
+          o.Albedo = lerp(o.Albedo, UNITY_ACCESS_INSTANCED_PROP(Props, _Color2) * o.Albedo, sampleAmount.b);
+          o.Emission = tex2D(_EmissionMask, IN.uv_MainTex) * UNITY_ACCESS_INSTANCED_PROP(Props, _EmissionColor);
           o.Normal = UnpackNormal (tex2D (_NormalMap, IN.uv_NormalMap));
       }
       ENDCG

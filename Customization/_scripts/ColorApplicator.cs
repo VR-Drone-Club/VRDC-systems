@@ -54,9 +54,11 @@ public class ColorApplicator : UdonSharpBehaviour
 
         if (Utilities.IsValid(_renderer))
         {
-            _renderer.material.SetColor("_Color0", _primaryColor);
-            _renderer.material.SetColor("_Color1", _secondaryColor);
-            _renderer.material.SetColor("_EmissionColor", _effectColor);
+            MaterialPropertyBlock block = new MaterialPropertyBlock();
+            block.SetColor("_Color0", _primaryColor * Random.Range(0.8f, 1.2f));
+            block.SetColor("_Color1", _secondaryColor * Random.Range(0.8f, 1.2f));
+            block.SetColor("_EmissionColor", _effectColor * Random.Range(0.8f, 1.2f));
+            _renderer.SetPropertyBlock(block);
         }
     }
 }
