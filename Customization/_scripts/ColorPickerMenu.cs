@@ -18,6 +18,9 @@ public class ColorPickerMenu : UdonSharpBehaviour
     public Image primaryPreview;
     public Image secondaryPreview;
     public Image effectPreview;
+    public Image primaryBorder;
+    public Image secondaryBorder;
+    public Image effectBorder;
 
     public Slider hueSlider;
     public Slider saturationSlider;
@@ -30,7 +33,7 @@ public class ColorPickerMenu : UdonSharpBehaviour
 
     private void Start()
     {
-        colorPicker.SubscribeToChanges(Networking.LocalPlayer, this);
+        colorPicker.AssignBehaviour(Networking.LocalPlayer, this);
     }
 
     public void ColorChanged()
@@ -60,6 +63,9 @@ public class ColorPickerMenu : UdonSharpBehaviour
                 color = _effect;
                 break;
         }
+        primaryBorder.gameObject.SetActive(_currentMode == ColorMode.Primary);
+        secondaryBorder.gameObject.SetActive(_currentMode == ColorMode.Secondary);
+        effectBorder.gameObject.SetActive(_currentMode == ColorMode.Effect);
         Color.RGBToHSV(color, out float h, out float s, out float v);
         hueSlider.SetValueWithoutNotify(h);
         saturationSlider.SetValueWithoutNotify(s);
@@ -98,5 +104,17 @@ public class ColorPickerMenu : UdonSharpBehaviour
                 colorPicker.SetEffect(Color.HSVToRGB(h,s,v));
                 break;
         }
+    }
+
+    public void Randomize()
+    {
+        float randomHue = UnityEngine.Random.Range(0f, 1f);
+        float randomSaturation = UnityEngine.Random.Range(0.5f, 1f);
+        float randomValue = UnityEngine.Random.Range(0.5f, 1f);
+        Debug.Log($"{randomHue} {randomSaturation} {randomValue}");
+        Color color = Color.HSVToRGB(randomHue,randomSaturation,randomValue);
+        colorPicker.SetPrimary(color);
+        colorPicker.SetSecondary(color * 0.8f);
+        colorPicker.SetEffect(color * 1.2f);
     }
 }

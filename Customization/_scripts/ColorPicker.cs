@@ -8,8 +8,10 @@ using VRC.Udon;
 
 public class ColorPicker : UdonSharpBehaviour
 {
-    private DataList _subscribedBehaviors = new DataList();
-    private DataList _subscribedBehaviourPlayers = new DataList();
+    private DataDictionary _assignedRenderers = new DataDictionary();
+    private DataDictionary _assignedParticleSystems = new DataDictionary();
+    private DataDictionary _assignedBehaviours = new DataDictionary();
+    private DataDictionary _inverseAssignmentMap = new DataDictionary();
     private DataDictionary _primaryColors = new DataDictionary();
     private DataDictionary _secondaryColors = new DataDictionary();
     private DataDictionary _effectColors = new DataDictionary();
@@ -20,6 +22,7 @@ public class ColorPicker : UdonSharpBehaviour
         if (!Utilities.IsValid(colorPickerObj)) return null;
         return colorPickerObj.GetComponent<ColorPicker>();
     }
+    
     private Color[] _defaultColors = new Color[]
     {
         Color.HSVToRGB(0, 1, 1),
@@ -58,7 +61,7 @@ public class ColorPicker : UdonSharpBehaviour
             ? new DataToken(effectColor) // read player's color preference if they have one
             : new DataToken(defaultColor * 1.2f); // otherwise, assign a default color
         
-        Debug.Log("Finished readorassigncolors");
+        Debug.Log($"Finished readorassigncolors for {player.displayName}");
         ColorChanged(player);
     }
     
@@ -94,25 +97,134 @@ public class ColorPicker : UdonSharpBehaviour
         if (_effectColors.ContainsKey(player.displayName)) return (Color)_effectColors[player.displayName].Reference;
         return Color.white;
     }
-    
-    public void SubscribeToChanges(VRCPlayerApi player, UdonSharpBehaviour behaviour)
+
+    public void AssignRenderer(VRCPlayerApi player, Renderer renderer)
     {
-        _subscribedBehaviors.Add(new DataToken(behaviour));
-        _subscribedBehaviourPlayers.Add(player.displayName);
-        if (_primaryColors.ContainsKey(player.displayName)) behaviour.SendCustomEvent("ColorChanged"); // if color has already been determined, send message now
+        Remove(renderer);
+        string displayName = player.displayName;
+        if (!_assignedRenderers.ContainsKey(player.displayName))
+        {
+            _assignedRenderers[displayName] = new DataList();
+        }
+        DataList dataList = _assignedRenderers[displayName].DataList;
+
+        if (dataList.Contains(renderer)) return;
+        dataList.Add(renderer);
+        renderer.SetPropertyBlock(GetPropertyBlock(player));
+        _inverseAssignmentMap[renderer] = displayName;
+    }
+
+    public void AssignParticleSystem(VRCPlayerApi player, ParticleSystem particleSystem)
+    {
+        Remove(particleSystem);
+        string displayName = player.displayName;
+        if (!_assignedParticleSystems.ContainsKey(player.displayName))
+        {
+            _assignedParticleSystems[displayName] = new DataList();
+        }
+        DataList dataList = _assignedParticleSystems[displayName].DataList;
+
+        if (dataList.Contains(particleSystem)) return;
+        dataList.Add(particleSystem);
+        var main = particleSystem.main;
+        Color color = GetEffect(player);
+        main.startColor = new Color(color.r, color.g, color.b, main.startColor.color.a);
+        _inverseAssignmentMap[particleSystem] = displayName;
+    }
+
+    public void AssignBehaviour(VRCPlayerApi player, UdonSharpBehaviour behaviour)
+    {
+        Remove(behaviour);
+        string displayName = player.displayName;
+        if (!_assignedBehaviours.ContainsKey(player.displayName))
+        {
+            _assignedBehaviours[displayName] = new DataList();
+        }
+        DataList dataList = _assignedBehaviours[displayName].DataList;
+        
+        if (dataList.Contains(behaviour)) return;
+        dataList.Add(behaviour);
+        behaviour.SendCustomEvent("ColorChanged");
+        _inverseAssignmentMap[behaviour] = displayName;
+    }
+
+    public void Remove(Object assigned)
+    {
+        if (!_inverseAssignmentMap.ContainsKey(assigned)) return;
+        string previousOwner = _inverseAssignmentMap[assigned].String;
+        if (_assignedParticleSystems.ContainsKey(previousOwner)) _assignedParticleSystems[previousOwner].DataList.Remove(assigned);
+        if (_assignedRenderers.ContainsKey(previousOwner)) _assignedRenderers[previousOwner].DataList.Remove(assigned);
+        if (_assignedBehaviours.ContainsKey(previousOwner)) _assignedBehaviours[previousOwner].DataList.Remove(assigned);
     }
     
     public void ColorChanged(VRCPlayerApi player)
     {
-        for (int i = 0; i < _subscribedBehaviors.Count; i++)
+        DataList log = new DataList();
+        if (_assignedRenderers.ContainsKey(player.displayName))
         {
-            var key = _subscribedBehaviourPlayers[i];
-            if (key != player.displayName) continue;
-            if (_subscribedBehaviors[i].IsNull) continue;
-            UdonSharpBehaviour behaviour = (UdonSharpBehaviour)_subscribedBehaviors[i].Reference;
-            behaviour.SendCustomEvent("ColorChanged");
-            Debug.Log($"Sent colorchanged event to {behaviour.name}");
+            DataList renderers = _assignedRenderers[player.displayName].DataList;
+            log.Add($"{player.displayName} has {renderers.Count} renderers");
+            MaterialPropertyBlock block = GetPropertyBlock(player);
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                if (renderers[i].IsNull) continue;
+                Renderer renderer = (Renderer)renderers[i].Reference;
+                renderer.SetPropertyBlock(block);
+                log.Add($"Set propertyblock on {renderer.name}");
+                log.Add(EventTracker.Instance().ConvertPropertyBlockToData(block));
+            }
         }
-        Debug.Log("Finished sending colorchanged to all relevant behaviours");
+        else
+        {
+            log.Add($"{player.displayName} has 0 renderers");
+        }
+
+        if (_assignedParticleSystems.ContainsKey(player.displayName))
+        {
+            DataList particleSystems = _assignedParticleSystems[player.displayName].DataList;
+            log.Add($"{player.displayName} has {particleSystems.Count} particles");
+            for (int i = 0; i < particleSystems.Count; i++)
+            {
+                if (particleSystems[i].IsNull) continue;
+                ParticleSystem particleSystem = (ParticleSystem)particleSystems[i].Reference;
+                var main = particleSystem.main;
+                Color color = GetEffect(player);
+                main.startColor = new Color(color.r, color.g, color.b, main.startColor.color.a);
+                log.Add($"Set {particleSystem.name} color to {color}");
+            }
+        }
+        else
+        {
+            log.Add($"{player.displayName} has 0 particles");
+        }
+
+        if (_assignedBehaviours.ContainsKey(player.displayName))
+        {
+            DataList behaviours = _assignedBehaviours[player.displayName].DataList;
+            log.Add($"{player.displayName} has {behaviours.Count} behaviours");
+            for (int i = 0; i < behaviours.Count; i++)
+            {
+                if (behaviours[i].IsNull) continue;
+                UdonSharpBehaviour behaviour = (UdonSharpBehaviour)behaviours[i].Reference;
+                behaviour.SendCustomEvent("ColorChanged");
+                log.Add($"Sent ColorChanged Udon event to {behaviour.name}");
+            }
+        }
+        else
+        {
+            log.Add($"{player.displayName} has 0 behaviours");
+        }
+        
+        EventTracker.Instance().TrackEvent(nameof(ColorPicker), nameof(ColorChanged), gameObject)
+            .AddParameter("Log", log);
+    }
+
+    public MaterialPropertyBlock GetPropertyBlock(VRCPlayerApi player)
+    {
+        MaterialPropertyBlock block = new MaterialPropertyBlock();
+        block.SetColor("_Color0", GetPrimary(player));
+        block.SetColor("_Color1", GetSecondary(player));
+        block.SetColor("_EmissionColor", GetEffect(player));
+        return block;
     }
 }
