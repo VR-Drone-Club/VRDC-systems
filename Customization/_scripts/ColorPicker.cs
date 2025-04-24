@@ -11,6 +11,7 @@ public class ColorPicker : UdonSharpBehaviour
     private DataDictionary _assignedRenderers = new DataDictionary();
     private DataDictionary _assignedParticleSystems = new DataDictionary();
     private DataDictionary _assignedBehaviours = new DataDictionary();
+    private DataDictionary _assignedTrailRenderers = new DataDictionary();
     private DataDictionary _inverseAssignmentMap = new DataDictionary();
     private DataDictionary _primaryColors = new DataDictionary();
     private DataDictionary _secondaryColors = new DataDictionary();
@@ -147,7 +148,24 @@ public class ColorPicker : UdonSharpBehaviour
         behaviour.SendCustomEvent("ColorChanged");
         _inverseAssignmentMap[behaviour] = displayName;
     }
-
+    public void AssignTrailRenderer(VRCPlayerApi player, TrailRenderer trail)
+    {
+        Remove(trail);
+        string displayName = player.displayName;
+        if (!_assignedTrailRenderers.ContainsKey(player.displayName))
+        {
+            _assignedTrailRenderers[displayName] = new DataList();
+        }
+        DataList dataList = _assignedTrailRenderers[displayName].DataList;
+        
+        if (dataList.Contains(trail)) return;
+        dataList.Add(trail);
+        Color color = GetEffect(player);
+        trail.startColor = new Color(color.r, color.g, color.b, trail.startColor.a);
+        trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);
+        _inverseAssignmentMap[trail] = displayName;
+    }
+ 
     public void Remove(Object assigned)
     {
         if (!_inverseAssignmentMap.ContainsKey(assigned)) return;
@@ -155,6 +173,7 @@ public class ColorPicker : UdonSharpBehaviour
         if (_assignedParticleSystems.ContainsKey(previousOwner)) _assignedParticleSystems[previousOwner].DataList.Remove(assigned);
         if (_assignedRenderers.ContainsKey(previousOwner)) _assignedRenderers[previousOwner].DataList.Remove(assigned);
         if (_assignedBehaviours.ContainsKey(previousOwner)) _assignedBehaviours[previousOwner].DataList.Remove(assigned);
+        if (_assignedTrailRenderers.ContainsKey(previousOwner)) _assignedTrailRenderers[previousOwner].DataList.Remove(assigned);
     }
     
     public void ColorChanged(VRCPlayerApi player)
@@ -208,6 +227,24 @@ public class ColorPicker : UdonSharpBehaviour
                 UdonSharpBehaviour behaviour = (UdonSharpBehaviour)behaviours[i].Reference;
                 behaviour.SendCustomEvent("ColorChanged");
                 log.Add($"Sent ColorChanged Udon event to {behaviour.name}");
+            }
+        }
+        else
+        {
+            log.Add($"{player.displayName} has 0 behaviours");
+        }
+        
+        if (_assignedTrailRenderers.ContainsKey(player.displayName))
+        {
+            DataList trails = _assignedTrailRenderers[player.displayName].DataList;
+            log.Add($"{player.displayName} has {trails.Count} line renderers");
+            for (int i = 0; i < trails.Count; i++)
+            {
+                if (trails[i].IsNull) continue;
+                TrailRenderer trail = (TrailRenderer)trails[i].Reference;
+                Color color = GetEffect(player);
+                trail.startColor = new Color(color.r, color.g, color.b, trail.startColor.a);
+                trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);
             }
         }
         else
