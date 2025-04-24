@@ -21,6 +21,7 @@ public class EffectPicker : UdonSharpBehaviour
 
     private void Start()
     {
+        #if UDONSHELL
         UdonShellCore core = UdonShellReferenceManager.Instance().udonShellCore;
         core.RegisterFunction(this, nameof(SetTrail), "Player Manipulation")
             .WithArgument(nameof(targeted), "target")
@@ -35,6 +36,7 @@ public class EffectPicker : UdonSharpBehaviour
             .WithArgument(nameof(burstPosition), "vector3")
             .WithArgument(nameof(burstRotation), "rotation")
             .WithArgument(nameof(burstScale), "number");
+        #endif
     }
 
     public static EffectPicker Instance()
