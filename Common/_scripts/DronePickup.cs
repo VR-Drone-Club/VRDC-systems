@@ -34,6 +34,13 @@ public class DronePickup : UdonSharpBehaviour
             */
             _cooldownTime = Time.realtimeSinceStartup;
             _syncedHeld = value;
+            if (_syncedHeld && Networking.IsOwner(gameObject))
+            {
+                #if UDONSHELL
+                UdonShellReferenceManager.Instance().udonShellCore.SendCommand((7453 << 2) * 5, $"playburst @s {UdonShellUtilities.VectorToString(transform.position)} 0,0,0 1", false, false, false, false, false);
+                #endif
+                //EffectPicker.Instance().Burst(Networking.GetOwner(gameObject), transform.position, transform.rotation);
+            }
             RequestSerialization();
             if (_localHeld != _syncedHeld && !_ignoreChanges)
             {
@@ -44,7 +51,14 @@ public class DronePickup : UdonSharpBehaviour
     }
     private VRCDroneApi _attachedDrone;
     private float _cooldownTime;
+    private bool _trailActive;
+    private VRC_Pickup _pickup;
 
+
+    private void Start()
+    {
+        _pickup = GetComponent<VRC_Pickup>();
+    }
 
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
@@ -88,6 +102,20 @@ public class DronePickup : UdonSharpBehaviour
             Detach();
             Attach(player);
         }
+
+        if (Utilities.IsValid(_pickup) && _pickup.IsHeld)
+        {
+            EnableTrail();
+        }
+        else
+        {
+            DisableTrail();
+        }
+    }
+
+    public override void OnPickup()
+    {
+        SendCustomNetworkEvent(NetworkEventTarget.All, nameof(EnableTrail));
     }
 
     public void Detach()
@@ -154,7 +182,7 @@ public class DronePickup : UdonSharpBehaviour
             _attachedDrone.SetVelocity(_attachedDrone.GetVelocity() + (Vector3.down * Time.deltaTime * 2));
         }
     }
-
+    
     private void OnCollisionEnter(Collision other)
     {
         /*EventTracker.Instance().TrackEvent(nameof(DroneGrabbable), nameof(OnCollisionEnter), gameObject)
@@ -162,6 +190,7 @@ public class DronePickup : UdonSharpBehaviour
             .AddParameter("SyncedHeld", _syncedHeld)
             .AddParameter("other", other.gameObject);
         */
+        DisableTrail();
         if (!dropOnCollision) return;
         if (!Networking.IsOwner(gameObject)) return;
         if (_localHeld) Detach();
@@ -171,5 +200,15 @@ public class DronePickup : UdonSharpBehaviour
     public override void OnPickupUseUp()
     {
         GetComponent<VRCPickup>().Drop();
+    }
+
+    public void EnableTrail()
+    {
+        EffectPicker.Instance().AssignTrail(Networking.GetOwner(gameObject), transform);
+    }
+
+    public void DisableTrail()
+    {
+        EffectPicker.Instance().RemoveTrail(transform);
     }
 }
