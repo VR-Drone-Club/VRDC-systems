@@ -15,6 +15,11 @@ public class DroneGate : UdonSharpBehaviour
     public GameObject idleEffects;
     public GameObject encourageEffects;
     public GameObject discourageEffects;
+    public ParticleSystem entryEffects;
+    public bool rotateEffectsToVelocity;
+    public AudioSource entryAudio;
+    public Transform forwardControlPoint;
+    public Transform reverseControlPoint;
     
     private GateConnector _connector;
 
@@ -41,7 +46,29 @@ public class DroneGate : UdonSharpBehaviour
     
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
-        if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Vector3.Dot(transform.forward, drone.GetVelocity()) < 0) return;
+        if (Utilities.IsValid(_connector) && drone.GetPlayer().isLocal) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Utilities.IsValid(entryEffects))
+        {
+            if (rotateEffectsToVelocity) entryEffects.transform.rotation = Quaternion.LookRotation(drone.GetVelocity());
+            var main = entryEffects.main;
+            var startSpeed = main.startSpeed;
+            if (startSpeed.mode == ParticleSystemCurveMode.TwoConstants)
+            {
+                startSpeed.constantMax = drone.GetVelocity().magnitude * 2;
+            }
+            else
+            {
+                startSpeed = drone.GetVelocity().magnitude * 2;
+            }
+            main.startSpeed = startSpeed;
+            entryEffects.Play();
+        }
+
+        if (Utilities.IsValid(entryAudio))
+        {
+            entryAudio.PlayOneShot(entryAudio.clip, drone.GetPlayer().isLocal ? 1 : 0.2f);
+        }
     }
     
 }
