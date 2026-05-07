@@ -20,8 +20,9 @@ public class DroneGate : UdonSharpBehaviour
     public AudioSource entryAudio;
     public Transform forwardControlPoint;
     public Transform reverseControlPoint;
-    
+
     private GateConnector _connector;
+    private GateProp _subscribedProp;
 
     private GateState _state;
     public GateState State
@@ -43,11 +44,23 @@ public class DroneGate : UdonSharpBehaviour
     {
         _connector = connector; // If this script is visible by a GateConnector, it should reach out and tell it where it belongs. This makes that connection happen.
     }
-    
+
+    public void SubscribeProp(GateProp gateProp)
+    {
+        Debug.Log($"gateprop {gateProp} subscribed to {name}");
+        _subscribedProp = gateProp;
+    }
+
+    public void SimulateTrigger()
+    {
+        if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
+    }
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
         if (Vector3.Dot(transform.forward, drone.GetVelocity()) < 0) return;
         if (Utilities.IsValid(_connector) && drone.GetPlayer().isLocal) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Utilities.IsValid(_subscribedProp) && drone.GetPlayer().isLocal) _subscribedProp.GateTriggered(this);
         if (Utilities.IsValid(entryEffects))
         {
             if (rotateEffectsToVelocity) entryEffects.transform.rotation = Quaternion.LookRotation(drone.GetVelocity());

@@ -13,20 +13,34 @@ public class LapRecord : DataDictionary
         LapRecord lap = (LapRecord)new DataDictionary();
 #endif
         lap["Splits"] = new DataList();
+        lap["Time"] = 0d;
         return lap;
     }
 }
 
 public static class LapRecordExtensions
 {
+    public static double GetTime(this LapRecord lapRecord)
+    {
+        return lapRecord["Time"].Double;
+    }
+    public static void SetTime(this LapRecord lapRecord, double time)
+    {
+        lapRecord["Time"] = time;
+    }
     public static void AddSplit(this LapRecord lapRecord, double time)
     {
         lapRecord["Splits"].DataList.Add(time);
+        if (time > lapRecord.GetTime()) lapRecord.SetTime(time);
     }
 
     public static double GetSplit(this LapRecord lapRecord, int index)
     {
         return lapRecord["Splits"].DataList[index].Double;
+    }
+    public static bool GetSplitType(this LapRecord lapRecord, int index)
+    {
+        return lapRecord["SplitType"].DataList[index].Boolean;
     }
 
     public static int GetSplitCount(this LapRecord lapRecord)
@@ -34,10 +48,13 @@ public static class LapRecordExtensions
         return lapRecord["Splits"].DataList.Count;
     }
 
-    public static double GetTime(this LapRecord lapRecord)
+    public static void SetCompleted(this LapRecord lapRecord)
     {
-        DataList splits = lapRecord["Splits"].DataList;
-        return splits[splits.Count - 1].Double;
+        lapRecord["Completed"] = true;
     }
-    
+
+    public static bool GetCompleted(this LapRecord lapRecord)
+    {
+        return lapRecord.ContainsKey("Completed") && lapRecord["Completed"] == true;
+    }
 }

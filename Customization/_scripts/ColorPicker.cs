@@ -5,6 +5,7 @@ using VRC.SDK3.Data;
 using VRC.SDK3.Persistence;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRCLightVolumes;
 
 public class ColorPicker : UdonSharpBehaviour
 {
@@ -12,6 +13,7 @@ public class ColorPicker : UdonSharpBehaviour
     private DataDictionary _assignedParticleSystems = new DataDictionary();
     private DataDictionary _assignedBehaviours = new DataDictionary();
     private DataDictionary _assignedTrailRenderers = new DataDictionary();
+    private DataDictionary _assignedLightVolumes = new DataDictionary();
     private DataDictionary _inverseAssignmentMap = new DataDictionary();
     private DataDictionary _primaryColors = new DataDictionary();
     private DataDictionary _secondaryColors = new DataDictionary();
@@ -160,12 +162,39 @@ public class ColorPicker : UdonSharpBehaviour
         
         if (dataList.Contains(trail)) return;
         dataList.Add(trail);
-        Color color = GetEffect(player);
-        trail.startColor = new Color(color.r, color.g, color.b, trail.startColor.a);
-        trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);
+        var gradient = new Gradient();
+        gradient.mode = GradientMode.Blend;
+        gradient.colorKeys = new GradientColorKey[]
+        {
+            new GradientColorKey(GetPrimary(player), 0.1f),
+            new GradientColorKey(GetEffect(player), 0.15f),
+        };
+        gradient.alphaKeys = new GradientAlphaKey[]
+        {
+            new GradientAlphaKey(1, 0),
+            new GradientAlphaKey(0, 1)
+        };
+        trail.colorGradient = gradient;
+
         _inverseAssignmentMap[trail] = displayName;
     }
- 
+
+    public void AssignLightVolume(VRCPlayerApi player, LightVolumeInstance lightVolumeInstance)
+    {
+        Remove(lightVolumeInstance);
+        string displayName = player.displayName;
+        if (!_assignedLightVolumes.ContainsKey(displayName))
+        {
+            _assignedLightVolumes[displayName] = new DataList();
+        }
+
+        DataList dataList = _assignedLightVolumes[displayName].DataList;
+        if (dataList.Contains(lightVolumeInstance)) return;
+        dataList.Add(lightVolumeInstance);
+        Color color = GetEffect(player);
+        lightVolumeInstance.Color = color;
+        _inverseAssignmentMap[lightVolumeInstance] = displayName;
+    }
     public void Remove(Object assigned)
     {
         if (!_inverseAssignmentMap.ContainsKey(assigned)) return;
@@ -174,6 +203,7 @@ public class ColorPicker : UdonSharpBehaviour
         if (_assignedRenderers.ContainsKey(previousOwner)) _assignedRenderers[previousOwner].DataList.Remove(assigned);
         if (_assignedBehaviours.ContainsKey(previousOwner)) _assignedBehaviours[previousOwner].DataList.Remove(assigned);
         if (_assignedTrailRenderers.ContainsKey(previousOwner)) _assignedTrailRenderers[previousOwner].DataList.Remove(assigned);
+        if (_assignedLightVolumes.ContainsKey(previousOwner)) _assignedLightVolumes[previousOwner].DataList.Remove(assigned);
     }
     
     public void ColorChanged(VRCPlayerApi player)
@@ -236,20 +266,47 @@ public class ColorPicker : UdonSharpBehaviour
         
         if (_assignedTrailRenderers.ContainsKey(player.displayName))
         {
-            DataList trails = _assignedTrailRenderers[player.displayName].DataList;
-            log.Add($"{player.displayName} has {trails.Count} line renderers");
-            for (int i = 0; i < trails.Count; i++)
+            var gradient = new Gradient();
+            gradient.mode = GradientMode.Blend;
+            gradient.colorKeys = new GradientColorKey[]
+            {
+                new GradientColorKey(GetPrimary(player), 0.1f),
+                new GradientColorKey(GetEffect(player), 0.15f),
+            };
+            gradient.alphaKeys = new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(1, 0),
+                new GradientAlphaKey(0, 1)
+            };
+            
+            DataList trails = _assignedTrailRenderers[player.displayName].DataList; 
+            for (int i = 0; i < trails.Count; i++) 
             {
                 if (trails[i].IsNull) continue;
                 TrailRenderer trail = (TrailRenderer)trails[i].Reference;
-                Color color = GetEffect(player);
+                trail.colorGradient = gradient;
+                /*
+                Color color = GetPrimary(player);
                 trail.startColor = new Color(color.r, color.g, color.b, trail.startColor.a);
-                trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);
+                color = GetEffect(player);
+                trail.endColor = new Color(color.r, color.g, color.b, trail.endColor.a);*/
             }
         }
         else
         {
             log.Add($"{player.displayName} has 0 behaviours");
+        }
+
+        if (_assignedLightVolumes.ContainsKey(player.displayName))
+        {
+            Color effect = GetEffect(player);
+            DataList lightVolumes = _assignedLightVolumes[player.displayName].DataList;
+            for (int i = 0; i < lightVolumes.Count; i++)
+            {
+                if (lightVolumes[i].IsNull) continue;
+                LightVolumeInstance lightVolumeInstance = (LightVolumeInstance)lightVolumes[i].Reference;
+                lightVolumeInstance.Color = effect;
+            }
         }
         
         EventTracker.Instance().TrackEvent(nameof(ColorPicker), nameof(ColorChanged), gameObject)

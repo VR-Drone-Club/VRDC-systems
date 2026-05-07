@@ -69,7 +69,7 @@ public class PlayerStats : UdonSharpBehaviour
             CourseRecord courseRecord = (CourseRecord)_data[hash].DataDictionary;
             courseRecord.SubmitTime(lapRecord);
         }
-        UdonShellReferenceManager.Instance().udonShellCore.SendCommand((7453 << 2) * 5, $"message @a {time:N3}", false, false, false, false, false);
+        if (Utilities.IsValid(UdonShellReferenceManager.Instance())) UdonShellReferenceManager.Instance().udonShellCore.SendCommand((7453 << 2) * 5, $"message @a {time:N3}", false, false, false, false, false);
         RequestSerialization();
     }
     

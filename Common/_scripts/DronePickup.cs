@@ -13,13 +13,14 @@ public class DronePickup : UdonSharpBehaviour
 {
     public Transform _holdOffset;
     public bool dropOnCollision = true;
+    public float trailScale = 1;
     
     [UdonSynced]
     [FieldChangeCallback(nameof(Held))]
     private bool _syncedHeld;
     private bool _localHeld;
     private bool _ignoreChanges;
-    private bool Held
+    public bool Held
     {
         get
         {
@@ -82,6 +83,7 @@ public class DronePickup : UdonSharpBehaviour
             if (_cooldownTime + 1 > Time.realtimeSinceStartup) return;
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             Held = true;
+            OnAttached();
             return;
         }
         gameObject.layer = 22;
@@ -94,6 +96,8 @@ public class DronePickup : UdonSharpBehaviour
             .AddParameter("SyncedHeld", _syncedHeld);*/
     }
 
+    public virtual void OnAttached(){}
+    public virtual void OnDetached(){}
     public override void OnOwnershipTransferred(VRCPlayerApi player)
     {
         _cooldownTime = Time.realtimeSinceStartup;
@@ -118,7 +122,7 @@ public class DronePickup : UdonSharpBehaviour
         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(EnableTrail));
     }
 
-    public void Detach()
+    public void Detach(bool forced = false)
     {
         /*EventTracker.Instance().TrackEvent(nameof(DroneGrabbable), nameof(Detach) + "Start", gameObject)
             .AddParameter("LocalHeld", _localHeld)
@@ -126,10 +130,11 @@ public class DronePickup : UdonSharpBehaviour
         
         if (Held && Networking.IsOwner(gameObject))
         {
-            if (_cooldownTime + 3 > Time.realtimeSinceStartup) return;
+            if (_cooldownTime + 3 > Time.realtimeSinceStartup && !forced) return;
             _ignoreChanges = true;
             Held = false;
             _ignoreChanges = false;
+            OnDetached();
         }   
         if (!_localHeld) return;
         gameObject.layer = 13;
@@ -204,7 +209,7 @@ public class DronePickup : UdonSharpBehaviour
 
     public void EnableTrail()
     {
-        EffectPicker.Instance().AssignTrail(Networking.GetOwner(gameObject), transform);
+        EffectPicker.Instance().AssignTrail(Networking.GetOwner(gameObject), transform, trailScale);
     }
 
     public void DisableTrail()

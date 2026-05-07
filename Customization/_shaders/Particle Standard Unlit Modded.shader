@@ -161,7 +161,7 @@ Shader "Particles/Standard Unlit Modded"
                 #pragma multi_compile_instancing
                 #pragma instancing_options procedural:vertInstancingSetup
 
-                #include "UnityStandardParticlesModded.cginc"
+                #include "UnityStandardParticles.cginc"
                 ENDCG
             }
         }

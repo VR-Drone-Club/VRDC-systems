@@ -9904,6 +9904,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6118090781322357648}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -9914,6 +9915,8 @@ MonoBehaviour:
   - {fileID: 2907927602029224799}
   - {fileID: 6183890654559627055}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6118090781322357648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14809,6 +14812,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3791088711279587521}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -14821,6 +14825,8 @@ MonoBehaviour:
   - {fileID: 3178807775357877335}
   - {fileID: 9056270962237492206}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &3791088711279587521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68810,6 +68816,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 8303056304044495001}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -68821,6 +68828,8 @@ MonoBehaviour:
   - {fileID: 4983008082558223480}
   - {fileID: 8022715944516480893}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &8303056304044495001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98146,6 +98155,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6260152249339846825}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -98156,6 +98166,8 @@ MonoBehaviour:
   - {fileID: 5516582783420588866}
   - {fileID: 4731884981799685045}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6260152249339846825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103122,6 +103134,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 7127144393156307898}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -103130,6 +103143,8 @@ MonoBehaviour:
   - {fileID: 6836473397143292093}
   - {fileID: 3391545712968704630}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &7127144393156307898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122849,6 +122864,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 4980451106044521980}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -122861,6 +122877,8 @@ MonoBehaviour:
   - {fileID: 6559480664089246445}
   - {fileID: 5544896808915758719}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &4980451106044521980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142736,6 +142754,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6985210730366518905}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -142745,6 +142764,8 @@ MonoBehaviour:
   - {fileID: 3542261756568037776}
   - {fileID: 4069571347303860975}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6985210730366518905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162538,6 +162559,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 8854557061461438940}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -162549,6 +162571,8 @@ MonoBehaviour:
   - {fileID: 2276473591724635613}
   - {fileID: 7697209248990078051}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &8854557061461438940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192533,6 +192557,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 7475490578249200924}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -192545,6 +192570,8 @@ MonoBehaviour:
   - {fileID: 7157799076104979467}
   - {fileID: 1336393046084544559}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &7475490578249200924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246429,6 +246456,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1274310027245731579}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -246438,6 +246466,8 @@ MonoBehaviour:
   - {fileID: 5913244862388567127}
   - {fileID: 3399822882796060045}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1274310027245731579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251332,6 +251362,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 7474319103716811241}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -251339,6 +251370,8 @@ MonoBehaviour:
   - {fileID: 1948648302552681678}
   - {fileID: 8731376249369088753}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &7474319103716811241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266289,6 +266322,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6364926063168681317}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -266299,6 +266333,8 @@ MonoBehaviour:
   - {fileID: 2226364653321676076}
   - {fileID: 7709299463624894072}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6364926063168681317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271194,6 +271230,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1350897297485377513}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -271206,6 +271243,8 @@ MonoBehaviour:
   - {fileID: 2908530855506985198}
   - {fileID: 3580246057801134408}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1350897297485377513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300907,6 +300946,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 2377980688766104312}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -300917,6 +300957,8 @@ MonoBehaviour:
   - {fileID: 2723287805702640946}
   - {fileID: 1737239067801326229}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &2377980688766104312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349963,6 +350005,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1537354181779760901}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -349972,6 +350015,8 @@ MonoBehaviour:
   - {fileID: 777040495584861255}
   - {fileID: 6200739687986869378}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1537354181779760901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359708,6 +359753,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3539748844600947378}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -359717,6 +359763,8 @@ MonoBehaviour:
   - {fileID: 7731207496263877532}
   - {fileID: 534045009851957021}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &3539748844600947378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379500,6 +379548,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 4149740287431317366}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -379509,6 +379558,8 @@ MonoBehaviour:
   - {fileID: 1054814631318060912}
   - {fileID: 7666400101938747648}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &4149740287431317366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419003,6 +419054,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6889227115486257841}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -419013,6 +419065,8 @@ MonoBehaviour:
   - {fileID: 8347895298061849893}
   - {fileID: 1666069154746902941}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6889227115486257841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428749,6 +428803,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 4331750833387602237}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -428756,6 +428811,8 @@ MonoBehaviour:
   - {fileID: 4799412481511526296}
   - {fileID: 4569035335738729248}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &4331750833387602237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443561,6 +443618,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 6449046516198769554}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -443568,6 +443626,8 @@ MonoBehaviour:
   - {fileID: 138185051977809823}
   - {fileID: 7427146212215556435}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &6449046516198769554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453406,6 +453466,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3295308790108748946}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -453413,6 +453474,8 @@ MonoBehaviour:
   - {fileID: 2876055864088185191}
   - {fileID: 1875446989832586470}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &3295308790108748946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463270,6 +463333,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1688286825529713456}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -463283,6 +463347,8 @@ MonoBehaviour:
   - {fileID: 4102799357372634247}
   - {fileID: 3275452803085539120}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1688286825529713456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -487852,6 +487918,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 726501302265266728}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -487863,6 +487930,8 @@ MonoBehaviour:
   - {fileID: 6587319578563323466}
   - {fileID: 7635696988619096542}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &726501302265266728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497731,7 +497800,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4659224572510612958
 Transform:
   m_ObjectHideFlags: 0
@@ -497747,6 +497816,7 @@ Transform:
   m_Children:
   - {fileID: 4689591130241619460}
   - {fileID: 7951905657093104344}
+  - {fileID: 5203562864843785389}
   - {fileID: 4326227317692932777}
   - {fileID: 3168061984939667076}
   - {fileID: 1220597469425818298}
@@ -522926,6 +522996,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1938801766175185653}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -522936,6 +523007,8 @@ MonoBehaviour:
   - {fileID: 2150189937500837614}
   - {fileID: 2359068083086658051}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1938801766175185653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542526,6 +542599,210 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &7246404759604296529
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5203562864843785389}
+  - component: {fileID: 7583754297856407431}
+  - component: {fileID: 2686712755913414276}
+  - component: {fileID: 3448900886271562427}
+  m_Layer: 0
+  m_Name: Line
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5203562864843785389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7246404759604296529}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 52.93, y: 17.38, z: -36.22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4659224572510612958}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7583754297856407431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7246404759604296529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f48316eae2aa27d458212a0dbef1d5c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _udonSharpBackingUdonBehaviour: {fileID: 2686712755913414276}
+  applyAutomatically: 0
+  colorMode: 0
+  colorPicker: {fileID: 0}
+  _renderers: []
+  _particleSystems: []
+  _trailRenderers:
+  - {fileID: 3448900886271562427}
+  findLightVolumes: 0
+  lightVolumes: []
+--- !u!114 &2686712755913414276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7246404759604296529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45115577ef41a5b4ca741ed302693907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactTextPlacement: {fileID: 0}
+  interactText: Use
+  interactTextGO: {fileID: 0}
+  proximity: 2
+  SynchronizePosition: 0
+  AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
+  _syncMethod: 2
+  serializedProgramAsset: {fileID: 11400000, guid: cdce6867d674b564e8411755d5977547,
+    type: 2}
+  programSource: {fileID: 11400000, guid: d69f523d56c0e074983758fedebbde30, type: 2}
+  serializedPublicVariablesBytesString: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgEAAAAAAAAAAi8CAAAAAUkAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAUwB5AHMAdABlAG0ALgBJAG4AdAAzADIALAAgAG0AcwBjAG8AcgBsAGkAYgBdAF0ALAAgAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAAIAAAAGAgAAAAAAAAAnAQQAAAB0AHkAcABlAAEXAAAAUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwAsACAAbQBzAGMAbwByAGwAaQBiACcBCgAAAFMAeQBtAGIAbwBsAE4AYQBtAGUAAR8AAABfAF8AXwBVAGQAbwBuAFMAaABhAHIAcABCAGUAaABhAHYAaQBvAHUAcgBWAGUAcgBzAGkAbwBuAF8AXwBfACcBBAAAAHQAeQBwAGUAARYAAABTAHkAcwB0AGUAbQAuAEkAbgB0ADMAMgAsACAAbQBzAGMAbwByAGwAaQBiABcBBQAAAFYAYQBsAHUAZQACAAAABwUHBQcF
+  publicVariablesUnityEngineObjects: []
+  publicVariablesSerializationDataFormat: 0
+--- !u!96 &3448900886271562427
+TrailRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7246404759604296529}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 516b74cb344b7df438b3ed5834b47040, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Time: 20
+  m_PreviewTimeScale: 1
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 52621
+      atime2: 65535
+      atime3: 65535
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 3
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_MinVertexDistance: 0.1
+  m_MaskInteraction: 0
+  m_Autodestruct: 0
+  m_Emitting: 1
+  m_ApplyActiveColorSpace: 1
 --- !u!1 &7324455502068190155
 GameObject:
   m_ObjectHideFlags: 0
@@ -562160,6 +562437,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 4344801426328146810}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -562169,6 +562447,8 @@ MonoBehaviour:
   - {fileID: 3866402790411267637}
   - {fileID: 1982001861585684291}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &4344801426328146810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581665,6 +581945,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1475835848567067923}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -581673,6 +581954,8 @@ MonoBehaviour:
   - {fileID: 5530531465007659176}
   - {fileID: 9204150353657907145}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &1475835848567067923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591545,6 +591828,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 2152651245695273629}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -591554,6 +591838,8 @@ MonoBehaviour:
   - {fileID: 5627983777298125576}
   - {fileID: 9219592419758707274}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &2152651245695273629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606598,6 +606884,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1295446913407631363}
+  sourcePlayer: 0
+  size: 1
 --- !u!114 &1295446913407631363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -670505,6 +670793,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 2929703202507146116}
+  applyAutomatically: 0
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers: []
@@ -670515,6 +670804,8 @@ MonoBehaviour:
   - {fileID: 3469463240198948267}
   - {fileID: 7503032991237124238}
   _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &2929703202507146116
 MonoBehaviour:
   m_ObjectHideFlags: 0

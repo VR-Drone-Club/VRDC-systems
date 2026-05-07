@@ -85,7 +85,7 @@ public class Railgun : UdonSharpBehaviour
     {
         if (!Utilities.IsValid(attachedPickup)) return;
         DronePickup dronePickup = attachedPickup.GetComponent<DronePickup>();
-        dronePickup.EnableTrail();
+        dronePickup.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(DronePickup.EnableTrail));
         if (!Networking.IsOwner(gameObject) || !Utilities.IsValid(attachedRigidbody)) return;
         lastLaunchTime = Time.timeSinceLevelLoad;
         attachedRigidbody.velocity = attachmentPoint.forward * Mathf.Lerp(minChargeVelocity, maxChargeVelocity, _chargeProgress);

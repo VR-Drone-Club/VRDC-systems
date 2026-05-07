@@ -3,22 +3,41 @@ using System;
 using System.Diagnostics;
 using UdonSharp;
 using UdonToolkit;
+using UnityEditor;
 using UnityEngine;
 using VRC.SDK3.Data;
 using VRC.SDKBase;
 using VRC.Udon;
 using Debug = UnityEngine.Debug;
+#if UNITY_EDITOR
+[CustomEditor(typeof(GateConnector))]
+public class GateConnectorInspector : UTEditor
+{
+    private void OnSceneGUI()
+    {
+        DroneGate[] path = ((GateConnector)target).gates;
 
+        for (int i = 0; i < path.Length; i++)
+        {
+            Transform gate = path[i].transform.parent;
+            gate.position = Handles.PositionHandle(gate.position, Quaternion.identity);
+        }
+    }
+}
+#endif
 public class GateConnector : UdonSharpBehaviour
 {
     public DroneGate[] gates;
     public LineRenderer guideLine;
     public RaceHud raceHud;
+    public bool autoStart = true;
+    public Transform startPedestal;
     
     private int _lastGate;
     private int _nextGate;
     private Stopwatch _stopwatch;
     private LapRecord _currentLapRecord;
+    private LapRecord _bestLapRecord;
     private PlayerStats _localPlayerStats;
     
     //private GateLap gateOrder;
@@ -27,6 +46,7 @@ public class GateConnector : UdonSharpBehaviour
     private void Start()
     {
         _localPlayerStats = PlayerStats.Find(Networking.LocalPlayer);
+        raceHud = RaceHud.Instance();
         if (!Utilities.IsValid(gates)) return;
         foreach (var gate in gates)
         {
@@ -41,8 +61,15 @@ public class GateConnector : UdonSharpBehaviour
         //progressStack = DataStack.New();
     }
 
-    internal virtual void BeginCourse()
+    public virtual void BeginCourse()
     {
+        if (!autoStart)
+        {
+            var drone = Networking.LocalPlayer.GetDrone();
+            if (!Utilities.IsValid(drone)) return;
+            drone.TeleportTo(startPedestal.position, startPedestal.rotation);
+            drone.SetVelocity(Vector3.zero);
+        }
         _lastGate = 0;
         _nextGate = 1;
         _stopwatch = Stopwatch.StartNew();
@@ -50,7 +77,7 @@ public class GateConnector : UdonSharpBehaviour
         ApplyState();
     }
 
-    internal virtual void AbortCourse()
+    public virtual void AbortCourse()
     {
         if (Utilities.IsValid(_stopwatch)) _stopwatch.Stop();
         _lastGate = 0;
@@ -58,9 +85,10 @@ public class GateConnector : UdonSharpBehaviour
         ApplyState();
         guideLine.positionCount = 0;
     }
-    internal virtual void EndCourse()
+    public virtual void EndCourse()
     {
         _localPlayerStats.SubmitLap(name, _currentLapRecord);
+        if (_bestLapRecord == null || _currentLapRecord.GetTime() < _bestLapRecord.GetTime()) _bestLapRecord = _currentLapRecord;
     }
 
     public void GateTriggered(DroneGate gate)
@@ -71,7 +99,7 @@ public class GateConnector : UdonSharpBehaviour
         Debug.Log($"Went through gate {index} while expected next gate was {_nextGate}");
         if (gates[index] != gates[_nextGate])
         {
-            if (gates[0] == gate)
+            if (gates[0] == gate && autoStart)
             {
                 AbortCourse();
                 BeginCourse();
@@ -88,7 +116,7 @@ public class GateConnector : UdonSharpBehaviour
     [Button("NextGate")]
     public void NextGate()
     {
-        if (_nextGate == 0)
+        if (_nextGate == 0 && autoStart)
         {
             BeginCourse();
             ApplyState();
@@ -98,9 +126,10 @@ public class GateConnector : UdonSharpBehaviour
         {
             if (gates[0] == gates[_nextGate]) //Repeat if the start gate is same as end gate
             {
+                _currentLapRecord.SetCompleted();
                 Split();
                 EndCourse();
-                BeginCourse();
+                if (autoStart) BeginCourse();
             }
             else // Or just end if this doesn't loop
             {
@@ -124,6 +153,7 @@ public class GateConnector : UdonSharpBehaviour
     private void Split()
     {
         if (_stopwatch == null) return;
+
         _currentLapRecord.AddSplit(_stopwatch.Elapsed.TotalSeconds);
         if (Utilities.IsValid(raceHud)) raceHud.DisplaySplit(name, _currentLapRecord);
 
@@ -176,8 +206,15 @@ public class GateConnector : UdonSharpBehaviour
         }
     }
 
+    [Button("DrawCurve")]
     public void DrawCurve()
     {
+        CalculateCurve();
+        guideLine.positionCount = _curve.Length;
+        for (int i = 0; i < _curve.Length; i++)
+        {
+            guideLine.SetPosition(i, _curve[i]);
+        }
         return;
         Transform startTransform = gates[_nextGate].transform;
         Transform endTransform = gates[_lastGate].transform;
@@ -260,6 +297,7 @@ public class GateConnector : UdonSharpBehaviour
     private int _pointOnCurve;
     public void DrawCurveProgressive()
     {
+        if (_curve == null) CalculateCurve();
         Vector3[] tempCurve = new Vector3[curveResolution];
         for (int i = 0; i < curveResolution; i++)
         {
@@ -286,5 +324,38 @@ public class GateConnector : UdonSharpBehaviour
         p += ttt * _curveEnd; //fourth term
 
         return p;
+    }
+    
+    private void OnDrawGizmos()
+    {
+        for (int i = 0; i < gates.Length; i++)
+        {
+            
+            DrawArrows(gates[i].transform.position, gates[(i + 1) % gates.Length].transform.position);
+        }
+    }
+
+    private void DrawArrows(Vector3 start, Vector3 end)
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(start, end);
+        Quaternion lookRotation = Quaternion.LookRotation(end - start);
+        float distance = Vector3.Distance(start, end);
+        float i = 0;
+        while (i < distance)
+        {
+            i += 200;
+            if (i > distance) break;
+            float lerp = Mathf.InverseLerp(0, distance, i);
+            Vector3 arrowPoint = Vector3.Lerp(start, end, lerp);
+            Vector3 leftArrow = new Vector3(-50, 0, -100);
+            leftArrow = lookRotation * leftArrow;
+            leftArrow += arrowPoint;
+            Gizmos.DrawLine(leftArrow, arrowPoint);
+            Vector3 rightArrow = new Vector3(50, 0, -100);
+            rightArrow = lookRotation * rightArrow;
+            rightArrow += arrowPoint;
+            Gizmos.DrawLine(rightArrow, arrowPoint);
+        }
     }
 }

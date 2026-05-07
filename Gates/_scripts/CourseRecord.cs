@@ -16,6 +16,9 @@ public class CourseRecord : DataDictionary
 #endif
         course["Hash"] = hash;
         course["BestLap"] = lapRecord;
+        DataList laps = new DataList();
+        laps.Add(lapRecord);
+        course["Laps"] = laps;
         course["TotalTime"] = lapRecord.GetTime();
         course["TotalLaps"] = 1;
         return course;

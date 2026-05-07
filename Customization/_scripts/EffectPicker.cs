@@ -16,12 +16,15 @@ public class EffectPicker : UdonSharpBehaviour
     private DataDictionary _chosenTrail = new DataDictionary();
     private DataDictionary _chosenBurst = new DataDictionary();
     private DataDictionary _assignedTrails = new DataDictionary();
+    private DataDictionary _trailSimulationSpaces = new DataDictionary();
+    private DataDictionary _trailSizes = new DataDictionary();
     private DataDictionary _inverseAssignmentMap = new DataDictionary();
     private DataDictionary _spawnedTrails = new DataDictionary();
 
     private void Start()
     {
         #if UDONSHELL
+        if (!Utilities.IsValid(UdonShellReferenceManager.Instance())) return;
         UdonShellCore core = UdonShellReferenceManager.Instance().udonShellCore;
         core.RegisterFunction(this, nameof(SetTrail), "Player Manipulation")
             .WithArgument(nameof(targeted), "target")
@@ -138,24 +141,42 @@ public class EffectPicker : UdonSharpBehaviour
     private void EffectChanged(VRCPlayerApi player)
     {
         if (!_assignedTrails.ContainsKey(player.displayName)) return;
-        DataList list = _assignedTrails[player.displayName].DataList;
-        for (int i = list.Count - 1; i >= 0; i--)
+        DataList attachments = _assignedTrails[player.displayName].DataList;
+        DataList simulationSpaces = _trailSimulationSpaces[player.displayName].DataList;
+        DataList sizes = _trailSizes[player.displayName].DataList;
+        for (int i = attachments.Count - 1; i >= 0; i--)
         {
-            Transform attachment = (Transform)list[i].Reference;
-            AssignTrail(player, attachment);
+            AssignTrail(player, (Transform)attachments[i].Reference, (Transform)simulationSpaces[i].Reference, sizes[i].Float);
         }
     }
-    
+
     public void AssignTrail(VRCPlayerApi player, Transform attachmentPoint)
     {
+        AssignTrail(player, attachmentPoint, null, 1);
+    }
+    public void AssignTrail(VRCPlayerApi player, Transform attachmentPoint, float size)
+    {
+        AssignTrail(player, attachmentPoint, null, size);
+    }
+    public void AssignTrail(VRCPlayerApi player, Transform attachmentPoint, Transform simulationSpace)
+    {
+        AssignTrail(player, attachmentPoint, simulationSpace, 1);
+    }
+    public void AssignTrail(VRCPlayerApi player, Transform attachmentPoint, Transform simulationSpace, float size)
+    {
         if (!Utilities.IsValid(player) || !Utilities.IsValid(attachmentPoint)) return;
+        Debug.Log($"Trail for {player.displayName} assigned to {attachmentPoint}");
         RemoveTrail(attachmentPoint);
         string displayName = player.displayName;
         if (!_assignedTrails.ContainsKey(player.displayName))
         {
             _assignedTrails[displayName] = new DataList();
+            _trailSimulationSpaces[displayName] = new DataList();
+            _trailSizes[displayName] = new DataList();
         }
         _assignedTrails[displayName].DataList.Add(attachmentPoint);
+        _trailSimulationSpaces[displayName].DataList.Add(simulationSpace);
+        _trailSizes[displayName].DataList.Add(size);
         _inverseAssignmentMap[attachmentPoint] = displayName;
         
         if (_chosenTrail.ContainsKey(player.displayName))
@@ -164,10 +185,26 @@ public class EffectPicker : UdonSharpBehaviour
             Transform trail = trailTemplates.GetChild(Mathf.Clamp(value, 0, trailTemplates.childCount - 1));
             var newObj = Instantiate(trail.gameObject, attachmentPoint.position, attachmentPoint.rotation, attachmentPoint);
             if (!Utilities.IsValid(newObj)) return;
+            newObj.transform.localScale = trail.localScale * size;
             _spawnedTrails[attachmentPoint] = newObj;
+            SetSimulationSpace(newObj.transform, simulationSpace);
             ColorApplicator colorApplicator = newObj.GetComponent<ColorApplicator>();
             if (!Utilities.IsValid(colorApplicator)) return;
-            colorApplicator.SetPlayer(player);
+            colorApplicator.Apply(player);
+        }
+    }
+
+    private void SetSimulationSpace(Transform spawnedTrail, Transform simulationSpace)
+    {
+        if (!Utilities.IsValid(spawnedTrail) || !Utilities.IsValid(simulationSpace)) return;
+        ParticleSystem[] particleSystems = spawnedTrail.GetComponentsInChildren<ParticleSystem>();
+        for (int i = 0; i < particleSystems.Length; i++)
+        {
+            if (!Utilities.IsValid(particleSystems[i])) continue;
+            var main = particleSystems[i].main;
+            if (main.simulationSpace == ParticleSystemSimulationSpace.Local) continue;
+            main.simulationSpace = ParticleSystemSimulationSpace.Custom;
+            main.customSimulationSpace = simulationSpace;
         }
     }
 
@@ -175,13 +212,26 @@ public class EffectPicker : UdonSharpBehaviour
     {
         if (!_inverseAssignmentMap.ContainsKey(trailAttachment)) return; //trail is not assigned anywhere, ignore
         string playerName = _inverseAssignmentMap[trailAttachment].String; //get player name for this trail
-        if (!_assignedTrails.ContainsKey(playerName)) return; //trail is not assigned, ignore
-        DataList list = _assignedTrails[playerName].DataList; //get list associated with player
-        list.Remove(trailAttachment); //remove from list
-        if (!_spawnedTrails.ContainsKey(trailAttachment)) return; //trail is not spawned, no need to clean up
-        Object foundTrail = (Object)_spawnedTrails[trailAttachment].Reference;
-        Destroy(foundTrail);
-        _spawnedTrails.Remove(trailAttachment);
+        if (_assignedTrails.ContainsKey(playerName))
+        {
+            DataList trails = _assignedTrails[playerName].DataList; //get list associated with player
+            DataList spaces = _trailSimulationSpaces[playerName].DataList; //get list associated with player
+            DataList sizes = _trailSizes[playerName].DataList; //get list associated with player
+            var index = trails.IndexOf(trailAttachment);
+            if (index >= 0)
+            {
+                trails.RemoveAt(index); //remove from list
+                spaces.RemoveAt(index); //remove from list
+                sizes.RemoveAt(index); //remove from list
+            }
+        }
+
+        if (_spawnedTrails.ContainsKey(trailAttachment))
+        {
+            Object foundTrail = (Object)_spawnedTrails[trailAttachment].Reference;
+            Destroy(foundTrail);
+            _spawnedTrails.Remove(trailAttachment);
+        }
     }
 
     public VRCPlayerApi burstPlayer;
@@ -209,7 +259,7 @@ public class EffectPicker : UdonSharpBehaviour
         scale *= Vector3.Distance(Networking.LocalPlayer.GetPosition(), position) / 5;
         newObject.transform.localScale *= scale;
         ColorApplicator colorApplicator = newObject.GetComponent<ColorApplicator>();
-        if (Utilities.IsValid(colorApplicator)) colorApplicator.SetPlayer(player);
+        if (Utilities.IsValid(colorApplicator)) colorApplicator.Apply(player);
         ParticleSystem particleSystem = newObject.GetComponent<ParticleSystem>();
         if (Utilities.IsValid(particleSystem)) particleSystem.Play();
         return particleSystem;

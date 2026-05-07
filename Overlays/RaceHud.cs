@@ -20,10 +20,28 @@ public class RaceHud : UdonSharpBehaviour
     public Color neutralColor;
     public GameObject personalBest;
     public GameObject lapComplete;
+    public LapDisplay lapDisplay;
+    public LapLog lapLog;
     
     private float _lastTimeDisplayed;
     private PlayerStats _localPlayerStats;
 
+    public static RaceHud Instance()
+    {
+        GameObject obj = GameObject.Find(nameof(RaceHud));
+        if (!Utilities.IsValid(obj))
+        {
+            Debug.Log("Failed to find gameobject RaceHud");
+            return null;
+        }
+        RaceHud raceHud = obj.GetComponent<RaceHud>();
+        if (!Utilities.IsValid(raceHud))
+        {
+            Debug.Log("RaceHud object did not have component");
+            return null;
+        }
+        return raceHud;
+    }
 
     private void Start()
     {
@@ -44,6 +62,8 @@ public class RaceHud : UdonSharpBehaviour
 
     public void DisplaySplit(string hash, LapRecord current)
     {
+        if (Utilities.IsValid(lapDisplay)) lapDisplay.SetLap(current);
+        if (Utilities.IsValid(lapLog) && current.GetCompleted()) lapLog.NewEntry(current);
         LapRecord best = _localPlayerStats.GetBestLap(hash);
         _lastTimeDisplayed = Time.realtimeSinceStartup;
         split.gameObject.SetActive(true);

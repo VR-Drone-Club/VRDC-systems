@@ -1,0 +1,316 @@
+{
+  "Nodes": {
+    "17606886516033085964": {
+      "Template": "Door",
+      "Position": [
+        -1,
+        0,
+        0.1
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {
+        "0": "8439378908969672247"
+      },
+      "OutputNodes": {},
+      "OutputValues": {},
+      "InputWires": {
+        "0": "12160687155851024706"
+      },
+      "OutputWires": {}
+    },
+    "13950610029925880848": {
+      "Template": "Door",
+      "Position": [
+        1,
+        0,
+        0.1
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {
+        "0": "4798210353175296380"
+      },
+      "OutputNodes": {},
+      "OutputValues": {},
+      "InputWires": {
+        "0": "625327794012469829"
+      },
+      "OutputWires": {}
+    },
+    "17695804069622398087": {
+      "Template": "Door",
+      "Position": [
+        3,
+        0,
+        0.1
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {
+        "0": "230717610052283431"
+      },
+      "OutputNodes": {},
+      "OutputValues": {},
+      "InputWires": {
+        "0": "11776475720470996889"
+      },
+      "OutputWires": {}
+    },
+    "230717610052283431": {
+      "Template": "Switch",
+      "Position": [
+        2,
+        1.2,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {},
+      "OutputNodes": {
+        "0": [
+          "17695804069622398087"
+        ]
+      },
+      "OutputValues": {},
+      "InputWires": {},
+      "OutputWires": {
+        "0": [
+          "11776475720470996889"
+        ]
+      }
+    },
+    "4798210353175296380": {
+      "Template": "Switch",
+      "Position": [
+        0,
+        1.2,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {},
+      "OutputNodes": {
+        "0": [
+          "13950610029925880848"
+        ]
+      },
+      "OutputValues": {},
+      "InputWires": {},
+      "OutputWires": {
+        "0": [
+          "625327794012469829"
+        ]
+      }
+    },
+    "8439378908969672247": {
+      "Template": "Switch",
+      "Position": [
+        -1.9,
+        1.2,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {},
+      "OutputNodes": {
+        "0": [
+          "17606886516033085964"
+        ]
+      },
+      "OutputValues": {},
+      "InputWires": {},
+      "OutputWires": {
+        "0": [
+          "12160687155851024706"
+        ]
+      }
+    },
+    "15325039427784287101": {
+      "Template": "Graph",
+      "Position": [
+        -3.2,
+        1.3,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {
+        "0": "1541586735310271235",
+        "1": "16344529520917918376"
+      },
+      "OutputNodes": {},
+      "OutputValues": {},
+      "InputWires": {
+        "0": "8623028949426759449",
+        "1": "8845437502499721472"
+      },
+      "OutputWires": {}
+    },
+    "1541586735310271235": {
+      "Template": "Switch",
+      "Position": [
+        -4.2,
+        1.6,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {},
+      "OutputNodes": {
+        "0": [
+          "15325039427784287101"
+        ]
+      },
+      "OutputValues": {},
+      "InputWires": {},
+      "OutputWires": {
+        "0": [
+          "8623028949426759449"
+        ]
+      }
+    },
+    "16344529520917918376": {
+      "Template": "Switch",
+      "Position": [
+        -4.2,
+        1.1,
+        0
+      ],
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "InputNodes": {},
+      "OutputNodes": {
+        "0": [
+          "15325039427784287101"
+        ]
+      },
+      "OutputValues": {},
+      "InputWires": {},
+      "OutputWires": {
+        "0": [
+          "8845437502499721472"
+        ]
+      }
+    }
+  },
+  "Wires": {
+    "12160687155851024706": {
+      "OutputSlot": 0,
+      "InputSlot": 0,
+      "InputNode": "17606886516033085964",
+      "OutputNode": "8439378908969672247",
+      "Positions": [
+        [
+          -1.832,
+          1.072,
+          0
+        ],
+        [
+          -1.5,
+          1,
+          0
+        ]
+      ]
+    },
+    "625327794012469829": {
+      "OutputSlot": 0,
+      "InputSlot": 0,
+      "InputNode": "13950610029925880848",
+      "OutputNode": "4798210353175296380",
+      "Positions": [
+        [
+          0.068,
+          1.072,
+          0
+        ],
+        [
+          0.5,
+          1,
+          0
+        ]
+      ]
+    },
+    "11776475720470996889": {
+      "OutputSlot": 0,
+      "InputSlot": 0,
+      "InputNode": "17695804069622398087",
+      "OutputNode": "230717610052283431",
+      "Positions": [
+        [
+          2.068,
+          1.072,
+          0
+        ],
+        [
+          2.5,
+          1,
+          0
+        ]
+      ]
+    },
+    "8623028949426759449": {
+      "OutputSlot": 0,
+      "InputSlot": 0,
+      "InputNode": "15325039427784287101",
+      "OutputNode": "1541586735310271235",
+      "Positions": [
+        [
+          -4.132,
+          1.472,
+          0
+        ],
+        [
+          -3.7,
+          1.3,
+          0
+        ]
+      ]
+    },
+    "8845437502499721472": {
+      "OutputSlot": 0,
+      "InputSlot": 1,
+      "InputNode": "15325039427784287101",
+      "OutputNode": "16344529520917918376",
+      "Positions": [
+        [
+          -4.132,
+          1.228,
+          0
+        ],
+        [
+          -3.7,
+          1.3,
+          0
+        ]
+      ]
+    }
+  }
+}

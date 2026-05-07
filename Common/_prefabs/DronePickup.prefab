@@ -5107,6 +5107,7 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 868411484653615556}
   _holdOffset: {fileID: 2544239812620977209}
   dropOnCollision: 1
+  trailScale: 5
 --- !u!114 &868411484653615556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5176,12 +5177,16 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 4255282095763769149}
+  applyAutomatically: 1
   colorMode: 0
   colorPicker: {fileID: 0}
   _renderers:
   - {fileID: 5893749924400334137}
   _particleSystems:
   - {fileID: 6215471814809349766}
+  _trailRenderers: []
+  findLightVolumes: 0
+  lightVolumes: []
 --- !u!114 &4255282095763769149
 MonoBehaviour:
   m_ObjectHideFlags: 0

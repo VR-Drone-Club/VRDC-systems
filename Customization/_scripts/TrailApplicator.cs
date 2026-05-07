@@ -13,12 +13,13 @@ public enum TrailSource
 public class TrailApplicator : UdonSharpBehaviour
 {
     public TrailSource sourcePlayer;
+    public float size = 1;
     private EffectPicker _effectPicker;
     
 
     private void Start()
     {
         _effectPicker = EffectPicker.Instance();
-        _effectPicker.AssignTrail(sourcePlayer == TrailSource.Local ? Networking.LocalPlayer : Networking.GetOwner(gameObject), transform);
+        _effectPicker.AssignTrail(sourcePlayer == TrailSource.Local ? Networking.LocalPlayer : Networking.GetOwner(gameObject), transform, size);
     }
 }

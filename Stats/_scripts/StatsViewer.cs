@@ -1,4 +1,4 @@
-﻿
+﻿    
 using System;
 using TMPro;
 using UdonSharp;
@@ -29,6 +29,8 @@ public class StatsViewer : UdonSharpBehaviour
         _entry.transform.localScale = Vector3.one;
         _nameText = _entry.transform.Find("Name").GetComponent<TextMeshProUGUI>();
         _bestTimeText = _entry.transform.Find("BestTime").GetComponent<TextMeshProUGUI>();
+        _nameText.text = Networking.GetOwner(gameObject).displayName;
+        _bestTimeText.text = "Not set";
     }
 
     private void OnDestroy()
