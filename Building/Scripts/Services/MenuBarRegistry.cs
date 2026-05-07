@@ -120,8 +120,11 @@ public class MenuBarRegistry : UdonSharpBehaviour
             Debug.Log($"Failed to find registered item '{Callback.GetString()}'");
             return;
         }
+
+        if (dataList[1].IsNull) return;
+        if (dataList[2].IsNull) return;
         var behaviour = (UdonSharpBehaviour)dataList[1].Reference;
-        var callback = dataList[2].String;
+        var callback = dataList[2].ToString();
         if (Utilities.IsValid(behaviour) && !string.IsNullOrEmpty(callback)) behaviour.SendCustomEvent(callback);
         
         //TODO: look through the registry and call the appropriate callback
