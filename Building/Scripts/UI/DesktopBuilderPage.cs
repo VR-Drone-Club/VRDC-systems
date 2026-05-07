@@ -14,11 +14,13 @@ public class DesktopBuilderPage : UdonSharpBehaviour
 {
     public Builder builder;
     public BuildManager buildManager;
+    public MenuBarRegistry menuBarRegistry;
     public TextBinding byteCountBinding;
     public TextBinding successBinding;
     public TextBinding cloggedBinding;
     private Toolbar _toolbar;
     private ToolActionBar _toolActionBar;
+    private HeaderMenuBar _headerMenuBar;
     private SelectionBox _selectionBox;
     private ToolInspector[] _toolEditors = new ToolInspector[0];
     private bool _initialized;
@@ -34,6 +36,8 @@ public class DesktopBuilderPage : UdonSharpBehaviour
         _toolbar = GetComponentInChildren<Toolbar>();
         _toolActionBar = GetComponentInChildren<ToolActionBar>();
         _selectionBox = GetComponentInChildren<SelectionBox>();
+        _headerMenuBar = GetComponentInChildren<HeaderMenuBar>();
+        _headerMenuBar.Bind(menuBarRegistry.Registry, menuBarRegistry.Callback);
         builder.Initialize();
         buildManager = builder.buildManager;
         buildManager.Initialize();

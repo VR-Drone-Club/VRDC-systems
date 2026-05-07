@@ -66,6 +66,10 @@ public static class ObservableExtensions
     {
         return observable[0].DataList;
     }
+    public static DataDictionary GetDictionary(this Observable observable)
+    {
+        return observable[0].DataDictionary;
+    }
 
     public static void Subscribe(this Observable observable, UdonSharpBehaviour behaviour, string eventName = null, string variableName = null)
     {

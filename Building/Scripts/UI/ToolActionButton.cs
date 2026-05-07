@@ -27,7 +27,6 @@ public class ToolActionButton : UdonSharpBehaviour
 
     public void ButtonPressed()
     {
-        Debug.Log($"{action.AsToolAction().Name()} pressed");
         action.AsToolAction().InformSubscribers();
     }
 }
