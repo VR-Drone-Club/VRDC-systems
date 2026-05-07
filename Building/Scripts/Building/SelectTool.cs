@@ -23,7 +23,7 @@ public class SelectTool : BuilderTool
         
         CreateProperty(nameof(SelectStartPoint),Vector3.zero.ToDataToken());
         CreateProperty(nameof(SelectEndPoint), Vector3.zero.ToDataToken());
-        CreateProperty(nameof(SelectStartTime),Observable.Create(0f));
+        CreateProperty(nameof(SelectStartTime),0f);
         CreateProperty(nameof(PrimaryDown), false);
         Builder.AddToolObject("SelectTool", MoveGizmo.gameObject);
         SetupActions();
