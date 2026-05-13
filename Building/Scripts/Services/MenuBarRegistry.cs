@@ -49,6 +49,7 @@ public class MenuBarRegistry : UdonSharpBehaviour
         RegisterMenuItem("Edit/Paste", null, null);
         RegisterMenuItem("Edit/Undo", null, null);
         RegisterMenuItem("Edit/Redo", null, null);
+        RegisterMenuItem("A/B/C/D", null, null);
     }
 
     public void New()

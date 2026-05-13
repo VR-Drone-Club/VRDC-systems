@@ -13,12 +13,19 @@ public class HeaderMenuBar : UdonSharpBehaviour
     private DataDictionary _activeItems;
     private DataList _callback;
     private bool _initialized;
+    private bool _active;
     public bool root;
     private void Initialize()
     {
         if (_initialized) return;
         _buttons = GetComponentsInChildren<HeaderMenuButton>(true);
+        if (Utilities.IsValid(_subMenu)) _subMenu.SetParent(this);
         _initialized = true;
+    }
+
+    public void SetParent(HeaderMenuBar parent)
+    {
+        _parentMenu = parent;
     }
     void Start()
     {
@@ -38,6 +45,7 @@ public class HeaderMenuBar : UdonSharpBehaviour
     public void SetData(bool active, DataDictionary menuItems, Observable callback)
     {
         Initialize();
+        _active = active;
         gameObject.SetActive(active);
         _callback = callback;
         if (Utilities.IsValid(_subMenu)) _subMenu.SetData(false, null, _callback.AsObservable());
@@ -58,10 +66,19 @@ public class HeaderMenuBar : UdonSharpBehaviour
         }
     }
 
+    public void Disable()
+    {
+        if (!_active || root) return;
+        if (Utilities.IsValid(_subMenu)) _subMenu.Disable();
+        SetData(false, null, null);
+        if (Utilities.IsValid(_parentMenu)) _parentMenu.Disable();
+    }
+
     public void ButtonPressed(string key)
     {
         if (!Utilities.IsValid(_activeItems)) return;
         if (!_activeItems.TryGetValue(key, out DataToken value)) return;
+        Debug.Log($"Menu bar button pressed, entry type was {value.TokenType}");
         switch (value.TokenType)
         {
             case TokenType.DataDictionary:
@@ -72,8 +89,8 @@ public class HeaderMenuBar : UdonSharpBehaviour
                 {
                     _callback.AsObservable().SetValue(value.ToString());
                 }
+                Disable();
                 break;
         }
-        if (!root) SetData(false, null, null);
     }
 }
