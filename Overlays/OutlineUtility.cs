@@ -32,7 +32,7 @@ public class OutlineUtility : UdonSharpBehaviour
 
     public void AddOutline(MeshFilter filter)
     {
-        Debug.Log($"AddOutline {filter} {_activeSelections.ContainsKey(filter)}");
+        //Debug.Log($"AddOutline {filter} {_activeSelections.ContainsKey(filter)}");
         if (_activeSelections.ContainsKey(filter)) return;
         GameObject outline;
         if (_selectionPool.Count > 0)

@@ -68,7 +68,7 @@ public class DesktopBuilderPage : UdonSharpBehaviour
 
         if (tool.HasProperty("SelectEndPoint"))
         {
-            Debug.Log("Tool changed, SelectTool");
+            //Debug.Log("Tool changed, SelectTool");
             tool.GetProperty("SelectStartPoint").Subscribe(this, nameof(SelectionBoxChanged));
             tool.GetProperty("PrimaryDown").Subscribe(this, nameof(SelectionBoxChanged));
             tool.GetProperty("SelectEndPoint").Subscribe(this, nameof(SelectionBoxChanged));
@@ -77,7 +77,7 @@ public class DesktopBuilderPage : UdonSharpBehaviour
 
     public void SelectionBoxChanged()
     {
-        Debug.Log("SelectionBoxChanged");
+        //Debug.Log("SelectionBoxChanged");
         var tool = (SelectTool)builder.ActiveTool;
         if (!tool.HasProperty("SelectEndPoint")) return;
         Vector3 startPoint = tool.SelectStartPoint.GetVector3();

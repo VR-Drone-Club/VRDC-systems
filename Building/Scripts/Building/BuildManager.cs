@@ -130,7 +130,7 @@ public class BuildManager : UdonSharpBehaviour
         }
 
         VRCJson.TrySerializeToJson(save, JsonExportType.Minify, out DataToken result);
-        Debug.Log(result.ToString());
+        //Debug.Log(result.ToString());
         return result.ToString();
     }
 

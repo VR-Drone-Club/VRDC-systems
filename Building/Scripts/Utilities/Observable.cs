@@ -144,7 +144,7 @@ public static class ObservableExtensions
             DataList subscriber = subscribers[i].DataList;
             if (subscriber[0].IsNull) continue;
             UdonBehaviour behaviour = (UdonBehaviour)subscriber[0].Reference;
-            Debug.Log($"Observable informing subscriber {behaviour.name} {subscriber[1].String}");
+            //Debug.Log($"Observable informing subscriber {behaviour.name} {subscriber[1].String}");
             if (!subscriber[2].IsNull) behaviour.SetProgramVariable(subscriber[2].String, observable);
             if (!subscriber[1].IsNull) behaviour.SendCustomEvent(subscriber[1].String);
         }

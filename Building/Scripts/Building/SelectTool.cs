@@ -75,7 +75,7 @@ public class SelectTool : BuilderTool
 
     public override void PrimaryAction(bool down)
     {
-        Debug.Log($"SelectTool PrimaryAction {down}");
+        //Debug.Log($"SelectTool PrimaryAction {down}");
         if (down)
         {
             var hoverPoint = Builder.HoverPoint().ToDataToken();
