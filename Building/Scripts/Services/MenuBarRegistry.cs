@@ -39,35 +39,19 @@ public class MenuBarRegistry : UdonSharpBehaviour
         _callbackObservable = Observable.Create(string.Empty);
         Callback.Subscribe(this, nameof(SendCallback));
     }
-    void Start()
-    {
-        RegisterMenuItem("File/New", this, nameof(New));
-        RegisterMenuItem("File/Save", this, nameof(Save));
-        RegisterMenuItem("File/Save as", null, null);
-        
-        RegisterMenuItem("Edit/Copy", null, null);
-        RegisterMenuItem("Edit/Paste", null, null);
-        RegisterMenuItem("Edit/Undo", null, null);
-        RegisterMenuItem("Edit/Redo", null, null);
-        RegisterMenuItem("A/B/C/D", null, null);
-    }
-
     public void New()
     {
         Debug.Log("Full cycle received NEW!");
     }
 
-    public void Save()
-    {
-        Debug.Log("Full cycle received SAVE!");
-    }
-    public void RegisterMenuItem(string key, UdonSharpBehaviour behaviour, string callback)
+    public void RegisterMenuItem(string key, UdonSharpBehaviour behaviour, string callback, DataToken variable = new DataToken())
     {
         Initialize();
         DataList entry = new DataList();
         entry.Add(key);
         entry.Add(behaviour);
         entry.Add(callback);
+        entry.Add(variable);
         _registeredItems[key] = entry;
         QueueUpdate();
     }
@@ -126,6 +110,8 @@ public class MenuBarRegistry : UdonSharpBehaviour
         if (dataList[2].IsNull) return;
         var behaviour = (UdonSharpBehaviour)dataList[1].Reference;
         var callback = dataList[2].ToString();
+        var variable = dataList[3];
+        if (Utilities.IsValid(behaviour)) behaviour.SetProgramVariable("variable", variable);
         if (Utilities.IsValid(behaviour) && !string.IsNullOrEmpty(callback)) behaviour.SendCustomEvent(callback);
         
         //TODO: look through the registry and call the appropriate callback

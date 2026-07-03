@@ -19,6 +19,8 @@ public class BuildManager : UdonSharpBehaviour
     public VRCUrl defaultSave;
     public Transform templateParent;
     public Builder[] builders;
+    public MenuBarRegistry menuBarRegistry;
+    public bool synced;
     
     private DataDictionary _templates;
     [UdonSynced]
@@ -53,6 +55,12 @@ public class BuildManager : UdonSharpBehaviour
         {
             LoadURL();
         }
+        menuBarRegistry.RegisterMenuItem("File/Export", this, nameof(Export));
+    }
+
+    public void Export()
+    {
+        Debug.Log(ExportSave());
     }
 
     void Update()
@@ -105,6 +113,7 @@ public class BuildManager : UdonSharpBehaviour
 
     public override void OnPreSerialization()
     {
+        if (!synced) return;
         _syncedState = ExportSave();
     }
 
@@ -144,6 +153,7 @@ public class BuildManager : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
+        if (!synced) return;
         LoadSave(_syncedState);
     }
 
