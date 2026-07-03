@@ -116,13 +116,14 @@ public class BuildManager : UdonSharpBehaviour
                 propProperties.Add(PositionToToken(prop.transform.position));
                 propProperties.Add(RotationToToken(prop.transform.rotation));
                 WorldPropTemplate propTemplate = prop.GetComponent<WorldPropTemplate>();
-                if (Utilities.IsValid(propTemplate) && Utilities.IsValid(propTemplate.currentParameters))
+                if (Utilities.IsValid(propTemplate))
                 {
+                    var parameters = propTemplate.GetParameters();
                     propTemplate.BuildManager = this;
-                    propProperties.Add(propTemplate.currentParameters);
-                    if (propTemplate.currentParameters.ContainsKey("uuid"))
+                    propProperties.Add(parameters);
+                    if (parameters.ContainsKey("uuid"))
                     {
-                        _propsByUUID[propTemplate.currentParameters["uuid"]] = propTemplate;
+                        _propsByUUID[parameters["uuid"]] = propTemplate;
                     }
                 }
                 exportedPool.Add(propProperties);
@@ -228,6 +229,7 @@ public class BuildManager : UdonSharpBehaviour
                 {
                     _propsByUUID[parameters["uuid"]] = propTemplate;
                 }
+                propTemplate.SetEditing(_editing);
             }
             _propPoolCounts[name] = count + 1;
             return newProp;
@@ -249,6 +251,7 @@ public class BuildManager : UdonSharpBehaviour
                 {
                     _propsByUUID[parameters["uuid"]] = propTemplate;
                 }
+                propTemplate.SetEditing(_editing);
             }
             pool.Add(newProp);
             _propPoolCounts[name] = count + 1;
@@ -283,7 +286,7 @@ public class BuildManager : UdonSharpBehaviour
         _zoneManager.BuildManagerChanged();
     }
 
-    public void PositionsDirty()
+    public void PropsDirty()
     {
         _zoneManager.BuildManagerChanged();
         // this manages syncing zone data after it's been changed
@@ -348,6 +351,25 @@ public class BuildManager : UdonSharpBehaviour
         _propPoolCounts[prop.name] = count - 1; //Decrement pool count
         pool.Add(prop); //Add back at end of pool so it can be retrieved later
         prop.SetActive(false);
+    }
+
+    private bool _editing;
+    public void SetEditing(bool value)
+    {
+        _editing = value;
+        var keys = _propPools.GetKeys();
+        for (int i = 0; i < _propPools.Count; i++)
+        {
+            var pool = _propPools[keys[i]].DataList;
+            for (int j = 0; j < pool.Count; j++)
+            {
+                if (pool[j].IsNull) continue;
+                var propGameObject = (GameObject)pool[j].Reference;
+                var propTemplate = propGameObject.GetComponentInChildren<WorldPropTemplate>();
+                if (!Utilities.IsValid(propTemplate)) continue;
+                propTemplate.SetEditing(value);
+            }
+        }
     }
 
     public void Clear()

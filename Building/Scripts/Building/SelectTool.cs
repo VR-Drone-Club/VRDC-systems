@@ -261,7 +261,7 @@ public class SelectTool : BuilderTool
         {
             selectedProps[i].transform.position += dif;
         }
-        BuildManager.PositionsDirty();
+        BuildManager.PropsDirty();
     }
 
     private void FindGizmoAxis()

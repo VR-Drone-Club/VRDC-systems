@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -10,9 +11,10 @@ public class Objective : WorldPropTemplate
     private Mission _mission;
     internal bool _eligible;
     internal bool _completed;
-    void Start()
+
+    private void Start()
     {
-        
+        ObjectiveStateChanged();
     }
 
     public void SetMission(Mission mission)
@@ -24,17 +26,26 @@ public class Objective : WorldPropTemplate
     {
         Debug.Log($"[Objective] {name} eligible {value}");
         _eligible = value;
+        ObjectiveStateChanged();
+    }
+    
+    public void ReportCompletion()
+    {
+        if (!_eligible) return;
+        if (!Utilities.IsValid(_mission)) return;
+        _mission.ObjectiveCompleted(this);
     }
 
     public void SetCompleted(bool value)
     {
         Debug.Log($"[Objective] {name} completed {value}");
         _completed = value;
+        ObjectiveStateChanged();
     }
 
-    public void ObjectiveComplete()
+
+    public virtual void ObjectiveStateChanged()
     {
-        if (!Utilities.IsValid(_mission)) return;
-        _mission.ObjectiveCompleted(this);
+        
     }
 }

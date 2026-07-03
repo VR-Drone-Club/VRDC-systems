@@ -47,7 +47,7 @@ public class DroneGate : Objective
 
     public void SubscribeProp(GateProp gateProp)
     {
-        Debug.Log($"gateprop {gateProp} subscribed to {name}");
+        //Debug.Log($"gateprop {gateProp} subscribed to {name}");
         _subscribedProp = gateProp;
     }
 
@@ -55,15 +55,20 @@ public class DroneGate : Objective
     {
         if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
         if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
-        ObjectiveComplete();
+        ReportCompletion();
     }
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
-        if (!_eligible) return;
         if (Vector3.Dot(transform.forward, drone.GetVelocity()) < 0) return;
-        ObjectiveComplete();
-        if (Utilities.IsValid(_connector) && drone.GetPlayer().isLocal) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
-        if (Utilities.IsValid(_subscribedProp) && drone.GetPlayer().isLocal) _subscribedProp.GateTriggered(this);
+        if (!drone.GetPlayer().isLocal) return;
+        if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
+        ReportCompletion();
+        EntryEffects(drone);
+    }
+
+    private void EntryEffects(VRCDroneApi drone)
+    {
         if (Utilities.IsValid(entryEffects))
         {
             if (rotateEffectsToVelocity) entryEffects.transform.rotation = Quaternion.LookRotation(drone.GetVelocity());
@@ -80,11 +85,15 @@ public class DroneGate : Objective
             main.startSpeed = startSpeed;
             entryEffects.Play();
         }
-
         if (Utilities.IsValid(entryAudio))
         {
             entryAudio.PlayOneShot(entryAudio.clip, drone.GetPlayer().isLocal ? 1 : 0.2f);
         }
     }
-    
+    public override void ObjectiveStateChanged()
+    {
+        base.ObjectiveStateChanged();
+        if (_eligible) State = GateState.EncourageEntry;
+        else State = GateState.Idle;
+    }
 }

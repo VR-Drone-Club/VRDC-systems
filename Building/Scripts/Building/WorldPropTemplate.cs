@@ -18,6 +18,7 @@ public class WorldPropTemplate : UdonSharpBehaviour
     public int minHeight;
     public int maxHeight;
     public Transform resizeTransform;
+    public GameObject editObject;
     [NonSerialized]
     public DataDictionary currentParameters = new DataDictionary();
 
@@ -206,5 +207,15 @@ public class WorldPropTemplate : UdonSharpBehaviour
             hashedValue *= 30744573; // scramble 
         }
         return hashedValue;
+    }
+
+    internal void Dirty()
+    {
+        BuildManager.PropsDirty();
+    }
+
+    public void SetEditing(bool value)
+    {
+        if (Utilities.IsValid(editObject)) editObject.SetActive(value);
     }
 }

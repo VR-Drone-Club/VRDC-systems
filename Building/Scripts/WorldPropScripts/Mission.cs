@@ -21,6 +21,7 @@ public class Mission : WorldPropTemplate
 
     private DataList _objectivesObservable;
     public Objective[] objectives;
+    public bool autoStart = true;
     private bool[] _objectiveStatus;
     void Start()
     {
@@ -36,14 +37,16 @@ public class Mission : WorldPropTemplate
             objective.SetCompleted(false);
             objective.SetMission(this);
         }
+        if (autoStart) MissionStart();
     }
 
     public void MissionStart()
     {
-        Debug.Log($"[Mission] {name} completed");
+        Debug.Log($"[Mission] {name} started");
         _objectiveStatus = new bool[objectives.Length];
         foreach (var objective in objectives)
         {
+            objective.SetCompleted(false);
             objective.SetEligible(true);
             objective.SetMission(this);
         }
@@ -70,6 +73,7 @@ public class Mission : WorldPropTemplate
     public void MissionCompleted()
     {
         Debug.Log($"[Mission] {name} completed");
+        if (autoStart) MissionStart();
     }
 
     public override DataDictionary SerializeProp()
@@ -95,6 +99,7 @@ public class Mission : WorldPropTemplate
             if (!Utilities.IsValid(prop)) continue;
             objectives[i] = (Objective)prop; // assume it's an objective, but this is fragile
         }
+        if (autoStart) MissionStart();
         base.DeserializeProp(parameters);
     }
 
@@ -102,5 +107,6 @@ public class Mission : WorldPropTemplate
     {
         objectives = objectives.Add(objective);
         Objectives.SetValue(objectives);
+        Dirty();
     }
 }

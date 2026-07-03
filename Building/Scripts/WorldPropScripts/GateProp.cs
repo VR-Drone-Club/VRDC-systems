@@ -31,7 +31,7 @@ public class GateProp : WorldPropTemplate
     }
     public void GateTriggered(DroneGate gate)
     {
-        //Debug.Log($"gateprop {name} received trigger from {gate}");
+        Debug.Log($"gateprop {name} received trigger from {gate}");
         int index = gates.IndexOf(gate);
         if (index == -1) return;
         foreach (var connector in _connectors) // send to all connectors that have subscribed to this

@@ -47,6 +47,7 @@ public class VRBuilder : Builder
         _active = !_active;
         canvas.gameObject.SetActive(_active);
         ActiveTool.SetToolActive(_active);
+        buildManager.SetEditing(_active);
     }
     
     private void LateUpdate()
