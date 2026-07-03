@@ -18,6 +18,7 @@ public class ZoneManager : UdonSharpBehaviour
     public MenuBarRegistry menuBarRegistry;
     private DataDictionary _zones = new DataDictionary();
     private DataDictionary _currentZone;
+    private bool _changesPending;
     public ZoneData CurrentZone => (ZoneData)_currentZone;
     [NonSerialized] public DataToken variable;
     void Start()
@@ -80,7 +81,15 @@ public class ZoneManager : UdonSharpBehaviour
             return;
         }
 
-        Debug.Log("BuildManager changed, applying changes to zone");
+        if (_changesPending) return; // no need to repeat if something is already coming down the pipeline
+        _changesPending = true;
+        SendCustomEventDelayedSeconds(nameof(ApplyChangesFromBuildManager), 0);
+        //Debug.Log("BuildManager changed, applying changes to zone");
+    }
+
+    public void ApplyChangesFromBuildManager()
+    {
         CurrentZone.PropsObservable().SetValue(buildManager.ExportSave());
+        _changesPending = false;
     }
 }
