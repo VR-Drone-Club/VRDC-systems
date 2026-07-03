@@ -6,6 +6,7 @@ using VRC.SDK3.Data;
 using VRC.SDKBase;
 using VRC.Udon;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class WorldPropTemplate : UdonSharpBehaviour
 {
     public bool lengthResizable;

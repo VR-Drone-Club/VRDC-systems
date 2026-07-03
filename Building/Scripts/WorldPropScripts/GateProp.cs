@@ -26,12 +26,12 @@ public class GateProp : WorldPropTemplate
     {
         Initialize();
         if (_connectors.Contains(prop)) return; // don't bother subscribing if already subscribed
-        Debug.Log($"connector {prop} subscribed to gateprop {name}");
+        //Debug.Log($"connector {prop} subscribed to gateprop {name}");
         _connectors = _connectors.Add(prop);
     }
     public void GateTriggered(DroneGate gate)
     {
-        Debug.Log($"gateprop {name} received trigger from {gate}");
+        //Debug.Log($"gateprop {name} received trigger from {gate}");
         int index = gates.IndexOf(gate);
         if (index == -1) return;
         foreach (var connector in _connectors) // send to all connectors that have subscribed to this
