@@ -10,9 +10,9 @@ public class ZoneProvider : UdonSharpBehaviour
     private ZoneManager _zoneManager;
     private DataDictionary zones;
     private DataList zonesObservable;
-    private bool _initialized;
+    internal bool _initialized;
     
-    private void Initialize()
+    internal virtual void Initialize()
     {
         if (_initialized) return;
         _initialized = true;
@@ -26,21 +26,36 @@ public class ZoneProvider : UdonSharpBehaviour
         Initialize();
         return (Observable)zonesObservable;
     }
-    public string Path()
+    public virtual string Path()
     {
         return string.Empty;
+    }
+
+    public virtual bool CanLoad(ZoneData zone)
+    {
+        return true;
+    }
+
+    public virtual bool CanEdit(ZoneData zone)
+    {
+        return true;
     }
     internal void AddZone(ZoneData zone)
     {
         Initialize();
         zones[zone.ID()] = zone;
-        zonesObservable.AsObservable().InformSubscribers();
+        zonesObservable.AsObservable().InformSubscribers()                                  ;
     }
 
-    internal ZoneData GetZone(string id)
+    public ZoneData GetZone(string path)
     {
-        if (zones.TryGetValue(id, TokenType.DataDictionary, out DataToken value))
-            return (ZoneData)value.DataDictionary;
+        if (path.StartsWith(Path())) return null;
+        path = path.Remove(0, Path().Length); // trim the unnecessary parts of the path
+        return GetZoneInternal(path);
+    }
+    internal ZoneData GetZoneInternal(string id)
+    {
+        if (zones.TryGetValue(id, TokenType.DataDictionary, out DataToken value)) return (ZoneData)value.DataDictionary;
         return null;
     }
     internal void RemoveZone(string id)

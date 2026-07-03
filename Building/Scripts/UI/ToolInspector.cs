@@ -8,7 +8,7 @@ namespace VRDC_systems.Building.Scripts.UI
     {
         private void Start()
         {
-            GetComponentInParent<DesktopBuilderPage>().RegisterEditor(this);
+            GetComponentInParent<DesktopBuilderPage>(true).RegisterEditor(this);
         }
 
         public void SetActive(bool value)

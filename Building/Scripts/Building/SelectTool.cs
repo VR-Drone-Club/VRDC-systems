@@ -188,7 +188,7 @@ public class SelectTool : BuilderTool
     {
         foreach (var prop in selectedProps)
         {
-            BuildManager.SyncedReturnProp(prop);
+            BuildManager.ReturnPropSynced(prop);
         }
         ClearSelection();
     }

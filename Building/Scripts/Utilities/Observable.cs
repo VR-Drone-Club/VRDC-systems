@@ -51,48 +51,53 @@ public static class ObservableExtensions
 
     public static Array GetArray(this Observable observable)
     {
-        return (Array)observable[0].Reference;
+        return (Array)observable.GetToken().Reference;
     }
 
     public static DataToken GetToken(this Observable observable)
     {
         return observable[0];
     }
+
+    public static DataList GetSubscribers(this Observable observable)
+    {
+        return observable[1].DataList;
+    }
     public static float GetFloat(this Observable observable)
     {
-        return observable[0].Float;
+        return observable.GetToken().Float;
     }
     public static int GetInt(this Observable observable)
     {
-        return observable[0].Int;
+        return observable.GetToken().Int;
     }
     public static bool GetBool(this Observable observable)
     {
-        return observable[0].Boolean;
+        return observable.GetToken().Boolean;
     }
     public static string GetString(this Observable observable)
     {
-        return observable[0].ToString();
+        return observable.GetToken().ToString();
     }
     public static Vector3 GetVector3(this Observable observable)
     {
-        return observable[0].ToVector3();
+        return observable.GetToken().ToVector3();
     }
     public static DataList GetList(this Observable observable)
     {
-        return observable[0].DataList;
+        return observable.GetToken().DataList;
     }
     public static DataDictionary GetDictionary(this Observable observable)
     {
-        return observable[0].DataDictionary;
+        return observable.GetToken().DataDictionary;
     }
     public static object GetReference(this Observable observable)
     {
-        return observable[0].Reference;
+        return observable.GetToken().Reference;
     }
     public static bool IsValueValid(this Observable observable)
     {
-        return !observable[0].IsEmpty;
+        return !observable.GetToken().IsEmpty;
     }
 
     public static void Subscribe(this Observable observable, UdonSharpBehaviour behaviour, string eventName = null, string variableName = null)
@@ -101,7 +106,7 @@ public static class ObservableExtensions
         subscriber.Add(behaviour);
         subscriber.Add(eventName);
         subscriber.Add(variableName);
-        observable[1].DataList.Add(subscriber);
+        observable.GetSubscribers().Add(subscriber);
         
         //if (!string.IsNullOrEmpty(variableName)) behaviour.SetProgramVariable(variableName, observable);
         //if (!string.IsNullOrEmpty(eventName)) behaviour.SendCustomEvent(eventName);
@@ -112,20 +117,34 @@ public static class ObservableExtensions
         subscriber.Add(behaviour);
         subscriber.Add(eventName);
         subscriber.Add(variableName);
-        observable[1].DataList.Add(subscriber);
+        observable.GetSubscribers().Add(subscriber);
         
         if (!string.IsNullOrEmpty(variableName)) behaviour.SetProgramVariable(variableName, observable);
         if (!string.IsNullOrEmpty(eventName)) behaviour.SendCustomEvent(eventName);
     }
 
+    public static void ClearSubscription(this Observable observable, UdonSharpBehaviour behaviour)
+    {
+        DataList subscribers = observable.GetSubscribers();
+        for (int i = subscribers.Count - 1; i >= 0; i--)
+        {
+            var entry = subscribers[i].DataList;
+            if (entry[0].Equals(behaviour))
+            {
+                subscribers.Remove(entry);
+            }
+        }
+    }
+
     public static void InformSubscribers(this Observable observable)
     {
-        DataList subscribers = observable[1].DataList;
+        DataList subscribers = observable.GetSubscribers();
         for (int i = 0; i < subscribers.Count; i++)
         {
             DataList subscriber = subscribers[i].DataList;
             if (subscriber[0].IsNull) continue;
             UdonBehaviour behaviour = (UdonBehaviour)subscriber[0].Reference;
+            Debug.Log($"Observable informing subscriber {behaviour.name} {subscriber[1].String}");
             if (!subscriber[2].IsNull) behaviour.SetProgramVariable(subscriber[2].String, observable);
             if (!subscriber[1].IsNull) behaviour.SendCustomEvent(subscriber[1].String);
         }

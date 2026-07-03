@@ -16,7 +16,9 @@ public class ZoneManager : UdonSharpBehaviour
     }
     public BuildManager buildManager;
     public MenuBarRegistry menuBarRegistry;
-    public DataDictionary zones;
+    private DataDictionary _zones = new DataDictionary();
+    private DataDictionary _currentZone;
+    public ZoneData CurrentZone => (ZoneData)_currentZone;
     [NonSerialized] public DataToken variable;
     void Start()
     {
@@ -24,26 +26,61 @@ public class ZoneManager : UdonSharpBehaviour
 
     public void ImportProvider(ZoneProvider provider)
     {
-        var zones = provider.Zones().GetDictionary();
-        var keys = zones.GetKeys();
+        var keys = _zones.GetKeys();
         for (int i = 0; i < keys.Count; i++)
         {
-            ImportZone(provider.Path(), (ZoneData)zones[keys[i]].DataDictionary);
+            AddZone(provider.Path(), (ZoneData)_zones[keys[i]].DataDictionary);
         }
     }
 
-    void ImportZone(string prefix, ZoneData zone)
+    void AddZone(string prefix, ZoneData zone)
     {
         string path = $"{prefix}/{zone.ID()}";
-        if (zones.ContainsKey(path)) return;
-        zones[ path] = zone;
+        if (_zones.ContainsKey(path)) return;
+        _zones[ path] = zone;
         menuBarRegistry.RegisterMenuItem($"Load/{path}", this, nameof(Load), path);
     }
 
     public void Load()
     {
-        if (!zones.TryGetDataDictionary(variable, out DataDictionary dictionary)) return;
+        LoadZoneByPath(variable.String);
+    }
+
+
+    public void LoadZoneByPath(string path)
+    {
+        if (!_zones.TryGetDataDictionary(path, out DataDictionary dictionary)) return;
         ZoneData zone = (ZoneData)dictionary;
-        buildManager.LoadSaveSynced(zone.Props());
+        LoadZone(zone);
+    }
+    public void LoadZone(ZoneData zoneData)
+    {
+        if (!Utilities.IsValid(zoneData)) return;
+        if (Utilities.IsValid(CurrentZone))
+        {
+            CurrentZone.PropsObservable().ClearSubscription(this); // unsubscribe from previous zone changes
+            _currentZone = null;
+        }
+        _currentZone = zoneData;
+        zoneData.PropsObservable().Subscribe(this, nameof(ZoneDataChanged)); // subscribe to new zone changes
+    }
+
+    public void ZoneDataChanged()
+    {
+        if (!Utilities.IsValid(CurrentZone)) return;
+        buildManager.LoadSave(CurrentZone.Props());
+    }
+
+    public void BuildManagerChanged()
+    {
+        if (!CurrentZone.CanEdit())
+        {
+            buildManager.LoadSave(CurrentZone.Props());
+            Debug.LogError("BuildManager attempted to modify zone that was not editable, returning to default");
+            return;
+        }
+
+        Debug.Log("BuildManager changed, applying changes to zone");
+        CurrentZone.PropsObservable().SetValue(buildManager.ExportSave());
     }
 }

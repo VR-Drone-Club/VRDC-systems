@@ -16,24 +16,21 @@ using VRDC_systems.Building.Scripts.Building;
 
 public class BuildManager : UdonSharpBehaviour
 {
-    public VRCUrl defaultSave;
     public Transform templateParent;
     public Builder[] builders;
     public MenuBarRegistry menuBarRegistry;
-    public bool synced;
-    
+
+    private ZoneManager _zoneManager;
     private DataDictionary _templates;
-    [UdonSynced]
-    private string _syncedState;
     public DataDictionary PropPools => _propPools;
     private DataDictionary _propPools = new DataDictionary();
     private DataDictionary _propPoolCounts = new DataDictionary();
     private bool _initialized;
     private DataDictionary _propsByUUID = new DataDictionary();
     private DataDictionary _delayedParameters = new DataDictionary();
-    private DataList _serializationByteCount;
-    private DataList _serializationSuccess;
-    private DataList _serializationClogged;
+    private string _appliedSave;
+
+
     public static BuildManager Instance()
     {
         GameObject buildManagerObject = GameObject.Find("BuildManager");
@@ -46,15 +43,6 @@ public class BuildManager : UdonSharpBehaviour
         {
             builder.Initialize();
         }
-        QuickMenu quickMenu = QuickMenu.Instance();
-        quickMenu.RegisterEvent("Builder/Export", this, nameof(ExportSave));
-        quickMenu.RegisterEvent("Builder/LoadURL", this, nameof(LoadURL));
-        quickMenu.RegisterEvent("Builder/Clear", this, nameof(Clear));
-
-        if (Networking.IsMaster)
-        {
-            LoadURL();
-        }
         menuBarRegistry.RegisterMenuItem("File/Export", this, nameof(Export));
     }
 
@@ -62,15 +50,11 @@ public class BuildManager : UdonSharpBehaviour
     {
         Debug.Log(ExportSave());
     }
-
-    void Update()
-    {
-        SerializationClogged.SetValue(Networking.IsClogged);
-    }
     
     public void Initialize()
     {
         if (_initialized) return;
+        _zoneManager = ZoneManager.Instance();
         _blueprints = new DataDictionary();
         _currentBlueprintSelection = new DataList();
         _templates = new DataDictionary();
@@ -84,9 +68,6 @@ public class BuildManager : UdonSharpBehaviour
         }
         templateParent.gameObject.SetActive(false);
         _initialized = true;
-        _serializationClogged = Observable.Create(false);
-        _serializationSuccess = Observable.Create(false);
-        _serializationByteCount = Observable.Create(0);
         GatherExistingProps();
     }
     private void GatherExistingProps()
@@ -109,69 +90,6 @@ public class BuildManager : UdonSharpBehaviour
             _propPools[foundName].DataList.Add(child.gameObject);
             child.gameObject.SetActive(false);
         }
-    }
-
-    public override void OnPreSerialization()
-    {
-        if (!synced) return;
-        _syncedState = ExportSave();
-    }
-
-    public override void OnPostSerialization(SerializationResult result)
-    {
-        if (_serializationByteCount == null) _serializationByteCount = Observable.Create(result.byteCount);
-        else _serializationByteCount.AsObservable().SetValue(result.byteCount);
-        if (_serializationSuccess == null) _serializationByteCount = Observable.Create(result.success);
-        else _serializationSuccess.AsObservable().SetValue(result.success);
-    }
-
-    public Observable SerializationByteCount
-    {
-        get
-        {
-            if (_serializationByteCount == null) _serializationByteCount = Observable.Create(0);
-            return _serializationByteCount.AsObservable();
-        }
-    }
-
-    public Observable SerializationSuccess
-    {
-        get
-        {
-            if (_serializationSuccess == null) _serializationSuccess = Observable.Create(false);
-            return _serializationSuccess.AsObservable();
-        }
-    }
-    public Observable SerializationClogged
-    {
-        get
-        {
-            if (_serializationClogged == null) _serializationClogged = Observable.Create(false);
-            return _serializationClogged.AsObservable();
-        }
-    }
-
-    public override void OnDeserialization()
-    {
-        if (!synced) return;
-        LoadSave(_syncedState);
-    }
-
-    public void LoadURL()
-    {
-        VRCStringDownloader.LoadUrl(defaultSave, (IUdonEventReceiver)this);
-    }
-    
-    public override void OnStringLoadSuccess(IVRCStringDownload result)
-    {
-        LoadSaveSynced(result.Result);
-    }
-
-    public void LoadSaveSynced(string save)
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        LoadSave(save);
-        RequestSerialization();
     }
     
     public string ExportSave()
@@ -215,10 +133,14 @@ public class BuildManager : UdonSharpBehaviour
         Debug.Log(result.ToString());
         return result.ToString();
     }
-    
-    private void LoadSave(string save)
+
+    public void LoadSave(string save)
     {
         if (!_initialized) Initialize();
+        if (_appliedSave == save) return;
+        _appliedSave = save;
+        
+        Clear();
         
         if (!VRCJson.TryDeserializeFromJson(save, out DataToken token) || token.TokenType != TokenType.DataDictionary)
         {
@@ -226,7 +148,6 @@ public class BuildManager : UdonSharpBehaviour
             return;
         }
 
-        ResetPools();
         DataDictionary dictionary = token.DataDictionary;
         DataList templates = dictionary.GetKeys();
         for (int i = 0; i < templates.Count; i++)
@@ -237,7 +158,7 @@ public class BuildManager : UdonSharpBehaviour
             {
                 DataList prop = props[j].DataList;
                 ExtractPropInfo(prop, out Vector3 position, out Quaternion rotation, out DataDictionary parameters);
-                SpawnProp(template, position, rotation, parameters);
+                SpawnPropInternal(template, position, rotation, parameters);
             }
         }
         ApplyParameters();
@@ -265,10 +186,9 @@ public class BuildManager : UdonSharpBehaviour
     }
     public GameObject SpawnPropSynced(string name, Vector3 position, Quaternion rotation, DataDictionary parameters)
     {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        RequestSerialization();
-        GameObject prop = SpawnProp(name, position, rotation, parameters);
+        GameObject prop = SpawnPropInternal(name, position, rotation, parameters);
         ApplyParameters();
+        _zoneManager.BuildManagerChanged();
         return prop;
     }
     
@@ -276,7 +196,7 @@ public class BuildManager : UdonSharpBehaviour
         //Key(string name) = Value(DataList pool)
             //GameObject prop
 
-    private GameObject SpawnProp(string name, Vector3 position, Quaternion rotation, DataDictionary parameters)
+    private GameObject SpawnPropInternal(string name, Vector3 position, Quaternion rotation, DataDictionary parameters)
     {
         if (parameters != null && parameters.ContainsKey("uuid") && _propsByUUID.ContainsKey(parameters["uuid"]))
         {
@@ -357,17 +277,16 @@ public class BuildManager : UdonSharpBehaviour
         }
         _delayedParameters.Clear();
     }
-    public void SyncedReturnProp(GameObject prop)
+    public void ReturnPropSynced(GameObject prop)
     {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
         ReturnProp(prop);
-        RequestSerialization();
+        _zoneManager.BuildManagerChanged();
     }
 
     public void PositionsDirty()
     {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        RequestSerialization();
+        _zoneManager.BuildManagerChanged();
+        // this manages syncing zone data after it's been changed
     }
     public bool IsRegisteredProp(GameObject prop)
     {
@@ -376,7 +295,7 @@ public class BuildManager : UdonSharpBehaviour
         {
             return false;
         }
-        DataList pool = _propPools[prop.name].DataList; // more precise pool check
+        DataList pool = _propPools[prop.name].DataList; // more complete pool check
         int index = pool.IndexOf(prop);
         if (index == -1)
         {
@@ -443,6 +362,7 @@ public class BuildManager : UdonSharpBehaviour
         {
             _propPoolCounts[keys[i]] = 0;
         }
+        _propsByUUID.Clear();
     }
 
     private void DisableUnusedProps()

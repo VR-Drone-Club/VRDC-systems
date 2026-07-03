@@ -18,7 +18,7 @@ public class ZoneFileSystem : ZoneProvider
     public void Save()
     {
         string save = buildManager.ExportSave();
-        var zone = ZoneData.Constructor(save);
+        var zone = ZoneData.Constructor(this, save);
         AddZone(zone);
     }
 }

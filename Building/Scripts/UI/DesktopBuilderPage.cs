@@ -15,9 +15,6 @@ public class DesktopBuilderPage : UdonSharpBehaviour
     public Builder builder;
     public BuildManager buildManager;
     public MenuBarRegistry menuBarRegistry;
-    public TextBinding byteCountBinding;
-    public TextBinding successBinding;
-    public TextBinding cloggedBinding;
     private Toolbar _toolbar;
     private ToolActionBar _toolActionBar;
     private HeaderMenuBar _headerMenuBar;
@@ -42,12 +39,6 @@ public class DesktopBuilderPage : UdonSharpBehaviour
         buildManager = builder.buildManager;
         buildManager.Initialize();
         builder.SelectedTool.Subscribe(this, nameof(SelectedToolChanged));
-        byteCountBinding.SetData(buildManager.SerializationByteCount);
-        byteCountBinding.SetLabel("Byte Count: ");
-        successBinding.SetData(buildManager.SerializationSuccess);
-        successBinding.SetLabel("Success: ");
-        cloggedBinding.SetData(buildManager.SerializationClogged);
-        cloggedBinding.SetLabel("Clogged: ");
     }
 
     public void RegisterEditor(ToolInspector toolInspector)

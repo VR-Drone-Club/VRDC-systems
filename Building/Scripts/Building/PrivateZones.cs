@@ -10,4 +10,14 @@ public class PrivateZones : ZoneProvider
     {
         
     }
+
+    public override string Path()
+    {
+        return "private/" + Networking.GetOwner(gameObject).playerId;
+    }
+
+    public override bool CanLoad(ZoneData zone)
+    {
+        return true; // refactor to restrict access
+    }
 }
