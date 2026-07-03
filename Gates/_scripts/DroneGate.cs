@@ -10,7 +10,7 @@ public enum GateState
     EncourageEntry,
     DiscourageEntry,
 }
-public class DroneGate : UdonSharpBehaviour
+public class DroneGate : Objective
 {
     public GameObject idleEffects;
     public GameObject encourageEffects;
@@ -55,10 +55,13 @@ public class DroneGate : UdonSharpBehaviour
     {
         if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
         if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
+        ObjectiveComplete();
     }
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
+        if (!_eligible) return;
         if (Vector3.Dot(transform.forward, drone.GetVelocity()) < 0) return;
+        ObjectiveComplete();
         if (Utilities.IsValid(_connector) && drone.GetPlayer().isLocal) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
         if (Utilities.IsValid(_subscribedProp) && drone.GetPlayer().isLocal) _subscribedProp.GateTriggered(this);
         if (Utilities.IsValid(entryEffects))

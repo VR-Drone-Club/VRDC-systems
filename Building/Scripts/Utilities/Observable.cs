@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UdonSharp;
@@ -8,6 +9,10 @@ using VRC.Udon;
 
 public class Observable : DataList
 {
+    public static Observable Create(Array array)
+    {
+        return Create(new DataToken(array));
+    }
     public static Observable Create(DataToken value)
     {
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
@@ -33,9 +38,20 @@ public static class ObservableExtensions
     }
     public static void SetValue(this Observable observable, DataToken value)
     {
-        if (observable[0] == value) return;
+        //if (observable[0] == value) return;
         observable[0] = value;
         observable.InformSubscribers();
+    }
+    public static void SetValue(this Observable observable, Array value)
+    {
+        //if (observable[0] == value) return;
+        observable[0] = new DataToken(value);
+        observable.InformSubscribers();
+    }
+
+    public static Array GetArray(this Observable observable)
+    {
+        return (Array)observable[0].Reference;
     }
 
     public static DataToken GetToken(this Observable observable)
@@ -70,6 +86,14 @@ public static class ObservableExtensions
     {
         return observable[0].DataDictionary;
     }
+    public static object GetReference(this Observable observable)
+    {
+        return observable[0].Reference;
+    }
+    public static bool IsValueValid(this Observable observable)
+    {
+        return !observable[0].IsEmpty;
+    }
 
     public static void Subscribe(this Observable observable, UdonSharpBehaviour behaviour, string eventName = null, string variableName = null)
     {
@@ -79,8 +103,8 @@ public static class ObservableExtensions
         subscriber.Add(variableName);
         observable[1].DataList.Add(subscriber);
         
-        if (!string.IsNullOrEmpty(variableName)) behaviour.SetProgramVariable(variableName, observable);
-        if (!string.IsNullOrEmpty(eventName)) behaviour.SendCustomEvent(eventName);
+        //if (!string.IsNullOrEmpty(variableName)) behaviour.SetProgramVariable(variableName, observable);
+        //if (!string.IsNullOrEmpty(eventName)) behaviour.SendCustomEvent(eventName);
     }
     public static void Subscribe(this Observable observable, UdonBehaviour behaviour, string eventName = null, string variableName = null)
     {

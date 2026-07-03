@@ -132,6 +132,12 @@ public class WorldPropTemplate : UdonSharpBehaviour
         if (!currentParameters.ContainsKey(key)) return defaultValue;
         return currentParameters[key].String;
     }
+    internal DataList GetListParameter(string key)
+    {
+        if (!Utilities.IsValid(currentParameters)) return new DataList();
+        if (!currentParameters.ContainsKey(key)) return new DataList();
+        return currentParameters[key].DataList;
+    }
 
     internal void SetIntParameter(string key, int value, int defaultValue)
     {
@@ -151,6 +157,20 @@ public class WorldPropTemplate : UdonSharpBehaviour
     {
         if (!Utilities.IsValid(currentParameters)) currentParameters = new DataDictionary();
         if (value == defaultValue)
+            currentParameters.Remove(key);
+        else
+            currentParameters[key] = value;
+    }
+    /// <summary>
+    /// Set a list parameter in the persistent storage for this prop
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    internal void SetListParameter(string key, DataList value)
+    {
+        if (!Utilities.IsValid(currentParameters)) currentParameters = new DataDictionary();
+        if (value == null || value.Count == 0)
             currentParameters.Remove(key);
         else
             currentParameters[key] = value;

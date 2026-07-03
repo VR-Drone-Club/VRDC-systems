@@ -14,12 +14,22 @@ public class ObservableButton : UdonSharpBehaviour
     public Image iconDisplay;
     private DataList _observable;
     private DataToken _value;
-    
+
+    public void SetData(bool active)
+    {
+        gameObject.SetActive(active);
+    }
+    public void SetData(bool active, string text, Sprite icon, UdonSharpBehaviour behaviour, string eventName)
+    {
+        var observable = Observable.Create(new DataToken());
+        observable.Subscribe(behaviour, eventName);
+        SetData(active, observable, new DataToken(), text, icon);
+    }
     public void SetData(bool active, Observable observable, DataToken value, string text, Sprite icon)
     {
-        textDisplay.text = text;
         gameObject.SetActive(active);
-        iconDisplay.sprite = icon;
+        if (Utilities.IsValid(textDisplay)) textDisplay.text = text;
+        if (Utilities.IsValid(iconDisplay)) iconDisplay.sprite = icon;
         _observable = observable;
         _value = value;
     }
