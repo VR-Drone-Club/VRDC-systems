@@ -30,6 +30,18 @@ public class WorldPropTemplate : UdonSharpBehaviour
     public Vector3 spriteScale;
     [NonSerialized] public BuildManager BuildManager;
     
+    private WorldPropTemplate[] _childProps;
+
+    public WorldPropTemplate[] ChildProps
+    {
+        get
+        {
+            if (_childProps != null) return _childProps;
+            _childProps = GetComponentsInChildren<WorldPropTemplate>(true);
+            return _childProps;
+        }
+    }
+
     public virtual void ResetParameters()
     {
         currentParameters.Clear();
@@ -187,11 +199,28 @@ public class WorldPropTemplate : UdonSharpBehaviour
     internal string GetUUID()
     {
         if (currentParameters.ContainsKey("uuid")) return currentParameters["uuid"].String;
+        var parent = transform.parent.GetComponentInParent<WorldPropTemplate>(true);
+        if (Utilities.IsValid(parent)) return parent.GetChildID(this);
         string uuid = GetNewHash();
         SetStringParameter("uuid", uuid, string.Empty);
         return uuid;
     }
-    
+
+    public WorldPropTemplate GetChildByUUID(string uuid)
+    {
+        foreach (var child in ChildProps)
+        {
+            if (child.GetUUID() == uuid) return child;
+        }
+        Debug.Log($"Unable to find child with ID {uuid}");
+        return null;
+    }
+    internal string GetChildID(WorldPropTemplate child)
+    {
+        string parentID = GetUUID();
+        int index = Array.IndexOf(ChildProps, child);
+        return $"{parentID}_{index}";
+    }
     private string GetNewHash()
     {
         System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);

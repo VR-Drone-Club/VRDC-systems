@@ -301,11 +301,22 @@ public class BuildManager : UdonSharpBehaviour
         return true;
     }
 
+    [RecursiveMethod]
     public WorldPropTemplate GetPropByUUID(string uuid)
     {
         if (_propsByUUID.ContainsKey(uuid))
         {
             return (WorldPropTemplate)_propsByUUID[uuid].Reference;
+        }
+
+        if (uuid.Contains("_"))
+        {
+            int index = uuid.IndexOf("_");
+            string start = uuid.Substring(0, index);
+            var parentProp = GetPropByUUID(start);
+            if (!Utilities.IsValid(parentProp)) return null;
+            Debug.Log($"Looking for prop with uuid {uuid}, split start to {start} and found {parentProp.name}");
+            return parentProp.GetChildByUUID(uuid);
         }
 
         return null;
