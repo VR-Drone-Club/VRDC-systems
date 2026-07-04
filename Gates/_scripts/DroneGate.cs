@@ -1,6 +1,9 @@
 ﻿
+using System.Collections.Generic;
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.Components;
+using VRC.SDK3.Data;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -66,7 +69,7 @@ public class DroneGate : Objective
         ReportCompletion();
         EntryEffects(drone);
     }
-
+    
     private void EntryEffects(VRCDroneApi drone)
     {
         if (Utilities.IsValid(entryEffects))
@@ -90,6 +93,13 @@ public class DroneGate : Objective
             entryAudio.PlayOneShot(entryAudio.clip, drone.GetPlayer().isLocal ? 1 : 0.2f);
         }
     }
+
+    public override void Initialize()
+    {
+        base.Initialize();
+        State = GateState.Idle;
+    }
+
     public override void ObjectiveStateChanged()
     {
         base.ObjectiveStateChanged();

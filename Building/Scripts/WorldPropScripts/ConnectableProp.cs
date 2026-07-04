@@ -19,8 +19,9 @@ namespace WorldPropScripts
         private DataList _connections;
         private bool _initialized;
 
-        private void Initialize()
+        public override void Initialize()
         {
+            base.Initialize();
             if (_initialized) return;
             _initialized = true;
             Connections = Observable.Create(new DataList());

@@ -9,16 +9,19 @@ using VRC.Udon;
 public class GateProp : WorldPropTemplate
 {
     public DroneGate[] gates;
-    private bool _initialized;
     private GateConnectorProp[] _connectors = new GateConnectorProp[0];
+    private bool _subscribed;
     
-    private void Initialize()
+    public override void Initialize()
     {
-        if (_initialized) return;
-        _initialized = true;
-        foreach (var gate in gates)
+        base.Initialize();
+        if (!_subscribed)
         {
-            gate.SubscribeProp(this);
+            _subscribed = true;
+            foreach (var gate in gates)
+            {
+                gate.SubscribeProp(this);
+            }
         }
     }
 

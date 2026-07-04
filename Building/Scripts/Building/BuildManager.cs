@@ -219,18 +219,7 @@ public class BuildManager : UdonSharpBehaviour
             GameObject newProp = (GameObject)potentialProp.Reference;
             newProp.SetActive(true);
             newProp.transform.SetPositionAndRotation(position, rotation);
-            WorldPropTemplate propTemplate = newProp.GetComponent<WorldPropTemplate>();
-            if (Utilities.IsValid(propTemplate))
-            {
-                propTemplate.BuildManager = this;
-                DelayParameters(propTemplate, parameters);
-                
-                if (parameters != null && parameters.ContainsKey("uuid"))
-                {
-                    _propsByUUID[parameters["uuid"]] = propTemplate;
-                }
-                propTemplate.SetEditing(_editing);
-            }
+            InitializeProp(newProp, parameters);
             _propPoolCounts[name] = count + 1;
             return newProp;
         }
@@ -242,24 +231,29 @@ public class BuildManager : UdonSharpBehaviour
             newProp.transform.SetPositionAndRotation(position, rotation);
             newProp.transform.SetParent(transform);
             newProp.name = name;
-            WorldPropTemplate propTemplate = newProp.GetComponent<WorldPropTemplate>();
-            if (Utilities.IsValid(propTemplate))
-            {
-                propTemplate.BuildManager = this;
-                DelayParameters(propTemplate, parameters);
-                if (parameters != null && parameters.ContainsKey("uuid"))
-                {
-                    _propsByUUID[parameters["uuid"]] = propTemplate;
-                }
-                propTemplate.SetEditing(_editing);
-            }
+            InitializeProp(newProp, parameters);
             pool.Add(newProp);
             _propPoolCounts[name] = count + 1;
-            
             return newProp;
         }
     }
 
+    private void InitializeProp(GameObject propObject, DataDictionary parameters)
+    {
+        Debug.Log($"BuildManager initializing {propObject.name}");
+        WorldPropTemplate propTemplate = propObject.GetComponent<WorldPropTemplate>();
+        if (Utilities.IsValid(propTemplate))
+        {
+            propTemplate.BuildManager = this;
+            propTemplate.Initialize();
+            DelayParameters(propTemplate, parameters);
+            if (parameters != null && parameters.ContainsKey("uuid"))
+            {
+                _propsByUUID[parameters["uuid"]] = propTemplate;
+            }
+            propTemplate.SetEditing(_editing);
+        }
+    }
     private void DelayParameters(WorldPropTemplate prop, DataDictionary parameters)
     {
         _delayedParameters[prop] = parameters;
@@ -356,17 +350,28 @@ public class BuildManager : UdonSharpBehaviour
     private bool _editing;
     public void SetEditing(bool value)
     {
+        Debug.Log($"SetEditing {value}");
         _editing = value;
         var keys = _propPools.GetKeys();
         for (int i = 0; i < _propPools.Count; i++)
         {
+            Debug.Log($"Looking at pool {keys[i]}");
             var pool = _propPools[keys[i]].DataList;
             for (int j = 0; j < pool.Count; j++)
             {
-                if (pool[j].IsNull) continue;
+                Debug.Log($"Checking entry {j}");
+                if (pool[j].IsNull)
+                {
+                    Debug.Log("entry Was null");
+                    continue;
+                }
                 var propGameObject = (GameObject)pool[j].Reference;
-                var propTemplate = propGameObject.GetComponentInChildren<WorldPropTemplate>();
-                if (!Utilities.IsValid(propTemplate)) continue;
+                var propTemplate = propGameObject.GetComponentInChildren<WorldPropTemplate>(true);
+                if (!Utilities.IsValid(propTemplate))
+                {
+                    Debug.Log("PropTemplate Was null");
+                    continue;
+                }
                 propTemplate.SetEditing(value);
             }
         }

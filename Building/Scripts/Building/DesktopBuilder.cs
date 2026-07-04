@@ -177,14 +177,7 @@ public class DesktopBuilder : Builder
         position = cam.transform.position;
         direction = Vector3.Normalize(cursor.position - cam.transform.position);
     }
-
     
-    public void StopBuilding()
-    {
-        _active = false;
-        canvas.gameObject.SetActive(_active);
-        cam.enabled = _active;
-    }
     public void ToggleBuild()
     {
         _active = !_active;
@@ -193,5 +186,6 @@ public class DesktopBuilder : Builder
         cam.transform.position = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position + Vector3.up;
         cam.transform.rotation = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).rotation;
         ActiveTool.SetToolActive(_active);
+        buildManager.SetEditing(_active);
     }
 }

@@ -216,6 +216,15 @@ public class WorldPropTemplate : UdonSharpBehaviour
 
     public void SetEditing(bool value)
     {
+        Debug.Log($"{name} SetEditing {value}");
         if (Utilities.IsValid(editObject)) editObject.SetActive(value);
+    }
+
+    /// <summary>
+    /// Runs when a prop has been spawned in the world
+    /// </summary>
+    public virtual void Initialize()
+    {
+        
     }
 }

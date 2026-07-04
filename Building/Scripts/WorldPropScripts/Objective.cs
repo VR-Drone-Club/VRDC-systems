@@ -43,6 +43,13 @@ public class Objective : WorldPropTemplate
         ObjectiveStateChanged();
     }
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        _eligible = false;
+        _completed = false;
+        ObjectiveStateChanged();
+    }
 
     public virtual void ObjectiveStateChanged()
     {

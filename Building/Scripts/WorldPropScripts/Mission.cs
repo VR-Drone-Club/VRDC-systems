@@ -28,7 +28,7 @@ public class Mission : WorldPropTemplate
         Initialize();
     }
 
-    private void Initialize()
+    public override void Initialize()
     {
         foreach (var objective in objectives)
         {

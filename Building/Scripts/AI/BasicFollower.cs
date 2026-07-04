@@ -41,8 +41,9 @@ public class BasicFollower : AbstractActor
         if (!_initialized) Initialize();
     }
 
-    private void Initialize()
+    public override void Initialize()
     {
+        base.Initialize();
         _health = maxHealth;
         _initialized = true;
     }
