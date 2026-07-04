@@ -2,6 +2,7 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
+using VRC.SDK3.StringLoading;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -12,10 +13,20 @@ public class DefaultZone : ZoneProvider
 
     private DataDictionary _currentZone;
     public ZoneData CurrentZone => (ZoneData)_currentZone;
-
+    public VRCUrl DefaultURL;
     void Start()
     {
         Initialize();
+        if (Networking.IsOwner(gameObject)) VRCStringDownloader.LoadUrl(DefaultURL, this);
+    }
+
+    public override void OnStringLoadSuccess(IVRCStringDownload result)
+    {
+        if (!Networking.IsOwner(gameObject)) return;
+        Debug.Log($"String load successful {result.Result}");
+        _syncedZone = result.Result;
+        OnDeserialization();
+        RequestSerialization();
     }
 
     internal override void Initialize()
