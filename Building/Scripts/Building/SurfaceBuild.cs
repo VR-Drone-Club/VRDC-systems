@@ -22,16 +22,21 @@ public class SurfaceBuild : BuilderTool
         Properties["SelectedTemplate"] = Observable.Create(string.Empty);
         Properties["SelectedTemplate"].DataList.AsObservable().Subscribe(this, nameof(TemplateChanged));
     }
+
+    private float _storedScroll;
     public override void Scroll(float change)
     {
+        _storedScroll += change;
         int current = _templates.IndexOf(SelectedTemplate);
-        if (change > 0)
+        if (_storedScroll > 0)
         {
+            _storedScroll--;
             current++;
             if (current >= _templates.Count) current = 0;
         }
-        if (change < 0)
+        if (_storedScroll < 0)
         {
+            _storedScroll++;
             current--;
             if (current < 0) current = _templates.Count - 1;
         }

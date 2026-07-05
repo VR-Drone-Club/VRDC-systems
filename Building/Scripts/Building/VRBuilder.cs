@@ -50,7 +50,7 @@ public class VRBuilder : Builder
         buildManager.SetEditing(_active);
     }
     
-    private void LateUpdate()
+    private void Update()
     {
         if (!_initialized) return;
 
@@ -123,8 +123,16 @@ public class VRBuilder : Builder
     }
     private void HandleTools()
     {
-        
+        ActiveTool.Scroll(-5 * _lookVertical * Time.deltaTime);
     }
+
+    private float _lookVertical;
+    public override void InputLookVertical(float value, UdonInputEventArgs args)
+    {
+        _lookVertical = value;
+        base.InputLookVertical(value, args);
+    }
+
     public override Ray CursorRay()
     {
         return DualLaser.GetPointerRay();
