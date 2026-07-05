@@ -61,21 +61,13 @@ public class VRBuilder : Builder
 
         if (!_active) return;
 
-        canvasPivot.SetPositionAndRotation(VRCCameraSettings.ScreenCamera.Position, VRCCameraSettings.ScreenCamera.Rotation);
         HandleCursor();
         HandleTools();
+        HandleGrab();
         ActiveTool.ToolUpdate();
+        canvasPivot.SetPositionAndRotation(VRCCameraSettings.ScreenCamera.Position, VRCCameraSettings.ScreenCamera.Rotation);
     }
 
-    public override void InputGrab(bool value, UdonInputEventArgs args)
-    {
-        if (!_active) return;
-        if (_lastHand != args.handType)
-        {
-            _lastHand = args.handType;
-            return;
-        }
-    }
 
     private HandType _lastHand;
     private bool _lastClickedUI;
@@ -123,6 +115,7 @@ public class VRBuilder : Builder
     }
     private void HandleTools()
     {
+        if (_leftGrab || _rightGrab) return;
         ActiveTool.Scroll(-5 * _lookVertical * Time.deltaTime);
     }
 
@@ -131,6 +124,61 @@ public class VRBuilder : Builder
     {
         _lookVertical = value;
         base.InputLookVertical(value, args);
+    }
+
+    private bool _leftGrab;
+    private Vector3 _leftGrabPoint;
+    private float _leftGrabDistance;
+    private bool _rightGrab;
+    private Vector3 _rightGrabPoint;
+    private float _rightGrabDistance;
+    
+    public override void InputGrab(bool value, UdonInputEventArgs args)
+    {
+        if (!_active) return;
+        var ray = DualLaser.GetPointerRay(args.handType);
+        Raycast(ray, QueryTriggerInteraction.Collide, out Vector3 pos, out Vector3 normal, out GameObject o);
+        if (args.handType == HandType.LEFT)
+        {
+            if (value) _rightGrab = false;
+            _leftGrab = value;
+            _leftGrabPoint = pos;
+            _leftGrabDistance = Vector3.Distance(ray.origin, _leftGrabPoint);
+        }
+        else
+        {
+            if (value) _leftGrab = false;
+            _rightGrab = value;
+            _rightGrabPoint = pos;
+            _rightGrabDistance = Vector3.Distance(ray.origin, _rightGrabPoint);
+        }
+    }
+    
+    public float builderScrollSpeed = -5;
+    private void HandleGrab()
+    {
+        Networking.LocalPlayer.SetVelocity(Vector3.zero);
+        var scroll = _lookVertical * Time.deltaTime * builderScrollSpeed;
+        _leftGrabDistance = Mathf.Max(0, _leftGrabDistance + scroll);
+        _rightGrabDistance = Mathf.Max(0, _rightGrabDistance + scroll);
+        if (_leftGrab)
+        {
+            var ray = DualLaser.GetPointerRay(HandType.LEFT);
+            var intersect = ray.GetPoint(_leftGrabDistance);
+            Vector3 difference = _leftGrabPoint - intersect;
+            var origin = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin);
+            var target = Vector3.Lerp(origin.position, origin.position + difference, 1f);
+            Networking.LocalPlayer.TeleportTo(target, origin.rotation, VRC_SceneDescriptor.SpawnOrientation.AlignRoomWithSpawnPoint);
+        }
+        if (_rightGrab)
+        {
+            var ray = DualLaser.GetPointerRay(HandType.RIGHT);
+            var intersect = ray.GetPoint(_rightGrabDistance);
+            Vector3 difference = _rightGrabPoint - intersect;
+            var origin = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin);
+            var target = Vector3.Lerp(origin.position, origin.position + difference, 1f);
+            Networking.LocalPlayer.TeleportTo(target, origin.rotation, VRC_SceneDescriptor.SpawnOrientation.AlignRoomWithSpawnPoint);
+        }
     }
 
     public override Ray CursorRay()
