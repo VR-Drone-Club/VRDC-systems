@@ -85,9 +85,9 @@ namespace VRDC_systems.Building.Scripts.Building
         }
         public bool Raycast(Ray ray, QueryTriggerInteraction queryTriggerInteraction, out Vector3 position, out Vector3 normal, out GameObject gameObject)
         {
-            if (!Physics.Raycast(ray, out RaycastHit hit, 10000, 1, queryTriggerInteraction))
+            if (!Physics.Raycast(ray, out RaycastHit hit, 1000, 1, queryTriggerInteraction))
             {
-                position = Vector3.zero;
+                position = ray.GetPoint(1000);
                 normal = Vector3.up;
                 gameObject = null;
                 return false;
