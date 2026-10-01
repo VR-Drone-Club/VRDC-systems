@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using UdonSharp;
 using UnityEngine;
@@ -20,12 +21,15 @@ public class DroneGate : Objective
     public GameObject discourageEffects;
     public ParticleSystem entryEffects;
     public bool rotateEffectsToVelocity;
+    public bool strictEntryDirection;
     public AudioSource entryAudio;
     public Transform forwardControlPoint;
     public Transform reverseControlPoint;
 
     private GateConnector _connector;
     private GateProp _subscribedProp;
+    private bool _allowLoop;
+    private bool _waitingForNextLoop;
 
     private GateState _state;
     public GateState State
@@ -36,13 +40,104 @@ public class DroneGate : Objective
         }
         set
         {
+            _allowLoop = false;
             _state = value;
-            if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(value == GateState.EncourageEntry);
-            if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(value == GateState.DiscourageEntry);
-            if (Utilities.IsValid(idleEffects)) idleEffects.SetActive(value == GateState.Idle);
+            switch (_state)
+            {
+                case GateState.Idle:
+                    if (Utilities.IsValid(idleEffects)) idleEffects.SetActive(true); // activate idle when idle
+                    if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(false);
+                    if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(false);
+                    break;
+                case GateState.DiscourageEntry:
+                    if (Utilities.IsValid(idleEffects)) idleEffects.SetActive(false);
+                    if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(false);
+                    if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(true); // activate discourage when discouraged
+                    break;
+                case GateState.EncourageEntry:
+                    Debug.Log("EncourageEntry");
+                    if (Utilities.IsValid(idleEffects)) idleEffects.SetActive(false);
+                    if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(false);
+                    
+                    if (strictEntryDirection) EnsureLoopRuns(); // if needed, check per frame 
+                    else if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(true); // else, just activate encourage
+                    break;
+            }
         }
     }
+
+    public void EnsureLoopRuns()
+    {
+        Debug.Log("EnsureLoopRuns");
+        _allowLoop = true;
+        QueueNextLoop();
+    }
+    private void QueueNextLoop()
+    {
+        Debug.Log("QueueNextLoop");
+        if (_waitingForNextLoop) return;
+        SendCustomEventDelayedSeconds(nameof(StateLoop), 0);
+        _waitingForNextLoop = true;
+    }
     
+    public void StateLoop()
+    {
+        Debug.Log("StateLoop");
+        _waitingForNextLoop = false;
+        if (!_allowLoop) return;
+        QueueNextLoop();
+        
+        
+        if (State == GateState.EncourageEntry)
+        {
+            if (strictEntryDirection)
+            {
+                if (Vector3.Dot(transform.forward, GetPlayerPosition() - transform.position) < 0)
+                {
+                    if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(true);
+                    if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(false);
+                }
+                else
+                {
+                    if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(false);
+                    if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(true);
+                }
+            }
+            else
+            {
+                if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(true);
+                if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(false);
+            }
+        }
+        else if (State == GateState.DiscourageEntry)
+        {
+            if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(false);
+            if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(true);
+        }
+        else if (State == GateState.Idle)
+        {
+            if (Utilities.IsValid(encourageEffects)) encourageEffects.SetActive(false);
+            if (Utilities.IsValid(discourageEffects)) discourageEffects.SetActive(false);
+            if (Utilities.IsValid(idleEffects)) idleEffects.SetActive(true);
+        }
+    }
+
+
+    public Vector3 GetPlayerPosition()
+    {
+        var drone = Networking.LocalPlayer.GetDrone();
+        if (Utilities.IsValid(drone) && drone.IsDeployed())
+        {
+            return drone.GetPosition();
+        }
+
+        if (DesktopBuilder.Instance()._active)
+        {
+            return DesktopBuilder.Instance().CameraPosition();
+        }
+        
+        return Networking.LocalPlayer.GetPosition();
+    }
     public void RegisterConnector(GateConnector connector)
     {
         _connector = connector; // If this script is visible by a GateConnector, it should reach out and tell it where it belongs. This makes that connection happen.
@@ -62,24 +157,24 @@ public class DroneGate : Objective
     }
     public override void OnDroneTriggerEnter(VRCDroneApi drone)
     {
-        if (Vector3.Dot(transform.forward, drone.GetVelocity()) < 0) return;
         if (!drone.GetPlayer().isLocal) return;
-        if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
-        if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
-        ReportCompletion();
-        EntryEffects(drone.GetVelocity());
+        EvaluateEntry(drone.GetPosition(), drone.GetVelocity());
     }
 
     public override void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
-        if (Vector3.Dot(transform.forward, player.GetVelocity()) < 0) return;
         if (!player.isLocal) return;
+        EvaluateEntry(player.GetPosition(), player.GetVelocity());
+    }
+
+    public void EvaluateEntry(Vector3 position, Vector3 velocity)
+    {
+        if (strictEntryDirection && Vector3.Dot(transform.forward, velocity) < 0) return;
         if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
         if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
         ReportCompletion();
-        EntryEffects(player.GetVelocity());
+        EntryEffects(velocity);
     }
-    
     private void EntryEffects(Vector3 velocity)
     {
         if (Utilities.IsValid(entryEffects))

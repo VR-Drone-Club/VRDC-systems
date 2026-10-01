@@ -16,6 +16,11 @@ using VRDC_systems.Building.Scripts.Building;
 
 public class DesktopBuilder : Builder
 {
+    public static DesktopBuilder Instance()
+    {
+        GameObject DesktopBuilderObject = GameObject.Find("DesktopBuilder");
+        return DesktopBuilderObject.GetComponent<DesktopBuilder>();
+    }
     public Camera cam;
     
     public float cursorSpeed = 10;
