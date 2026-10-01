@@ -67,30 +67,40 @@ public class DroneGate : Objective
         if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
         if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
         ReportCompletion();
-        EntryEffects(drone);
+        EntryEffects(drone.GetVelocity());
+    }
+
+    public override void OnPlayerTriggerEnter(VRCPlayerApi player)
+    {
+        if (Vector3.Dot(transform.forward, player.GetVelocity()) < 0) return;
+        if (!player.isLocal) return;
+        if (Utilities.IsValid(_connector)) _connector.GateTriggered(this); // Pass events along to the GateConnector, if there is one.
+        if (Utilities.IsValid(_subscribedProp)) _subscribedProp.GateTriggered(this);
+        ReportCompletion();
+        EntryEffects(player.GetVelocity());
     }
     
-    private void EntryEffects(VRCDroneApi drone)
+    private void EntryEffects(Vector3 velocity)
     {
         if (Utilities.IsValid(entryEffects))
         {
-            if (rotateEffectsToVelocity) entryEffects.transform.rotation = Quaternion.LookRotation(drone.GetVelocity());
+            if (rotateEffectsToVelocity) entryEffects.transform.rotation = Quaternion.LookRotation(velocity);
             var main = entryEffects.main;
             var startSpeed = main.startSpeed;
             if (startSpeed.mode == ParticleSystemCurveMode.TwoConstants)
             {
-                startSpeed.constantMax = drone.GetVelocity().magnitude * 2;
+                startSpeed.constantMax = velocity.magnitude * 2;
             }
             else
             {
-                startSpeed = drone.GetVelocity().magnitude * 2;
+                startSpeed = velocity.magnitude * 2;
             }
             main.startSpeed = startSpeed;
             entryEffects.Play();
         }
         if (Utilities.IsValid(entryAudio))
         {
-            entryAudio.PlayOneShot(entryAudio.clip, drone.GetPlayer().isLocal ? 1 : 0.2f);
+            entryAudio.Play();
         }
     }
 
