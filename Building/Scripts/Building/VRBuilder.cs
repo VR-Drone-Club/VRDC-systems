@@ -14,6 +14,8 @@ public class VRBuilder : Builder
 {
     public DualLaser DualLaser;
     public Transform canvasPivot;
+    public PlayerProperties playerProperties;
+    public PlayerStatusController playerStatusController;
     
     void Start()
     {
@@ -48,6 +50,14 @@ public class VRBuilder : Builder
         canvas.gameObject.SetActive(_active);
         ActiveTool.SetToolActive(_active);
         buildManager.SetEditing(_active);
+        if (_active)
+        {
+            playerStatusController.AddStatus("noclip", 10f, -1, true);
+        }
+        else
+        {
+            playerStatusController.RemoveStatus("noclip", 10f, true);
+        }
     }
     
     private void Update()
@@ -157,7 +167,7 @@ public class VRBuilder : Builder
     public float builderScrollSpeed = -5;
     private void HandleGrab()
     {
-        Networking.LocalPlayer.SetVelocity(Vector3.zero);
+        //Networking.LocalPlayer.SetVelocity(Vector3.zero);
         var scroll = _lookVertical * Time.deltaTime * builderScrollSpeed;
         _leftGrabDistance = Mathf.Max(0, _leftGrabDistance + scroll);
         _rightGrabDistance = Mathf.Max(0, _rightGrabDistance + scroll);
@@ -168,7 +178,7 @@ public class VRBuilder : Builder
             Vector3 difference = _leftGrabPoint - intersect;
             var origin = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin);
             var target = Vector3.Lerp(origin.position, origin.position + difference, 1f);
-            Networking.LocalPlayer.TeleportTo(target, origin.rotation, VRC_SceneDescriptor.SpawnOrientation.AlignRoomWithSpawnPoint);
+            playerProperties.TeleportTo(target, origin.rotation);
         }
         if (_rightGrab)
         {
@@ -177,7 +187,7 @@ public class VRBuilder : Builder
             Vector3 difference = _rightGrabPoint - intersect;
             var origin = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin);
             var target = Vector3.Lerp(origin.position, origin.position + difference, 1f);
-            Networking.LocalPlayer.TeleportTo(target, origin.rotation, VRC_SceneDescriptor.SpawnOrientation.AlignRoomWithSpawnPoint);
+            playerProperties.TeleportTo(target, origin.rotation);
         }
     }
 
