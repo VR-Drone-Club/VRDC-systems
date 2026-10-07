@@ -15,3 +15,7 @@ This repo contains a handful of systems. Most notably:
 - EffectPicker allows you to choose personal particle effects to represent you. Scripts in the world can then interface with it to deploy those particle effects at locations. It supports both bursts (provide a player/position/rotation and it will happen) and trails (provide a player/transform and it will attach that player's trail to that transform)
 
 Contributions and pull requests are welcome within the spirit of [Unlicense](https://unlicense.org/)
+
+
+### LLM Disclosure
+None. VR Drone Club is a labor of love and artistic self expression from the human mind.
